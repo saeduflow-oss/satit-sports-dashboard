@@ -53,11 +53,11 @@
           <p class="mt-1.5 text-[13.5px] text-fg-soft" id="schedNote">ทุกวัน ทุกรายการ เรียงตามเวลา</p>
         </div>
 
-        <!-- แถบเครื่องมือ — กล่องเดียวจบ: ค้นหากับปุ่มคำสั่งอยู่แถวบน ตัวกรองอยู่แถวล่างพร้อมป้ายกำกับ
-             (เดิมเป็นชิปสามแถวลอยบนพื้นหน้า อ่านเป็นกองปุ่มที่ไม่รู้ว่าอันไหนคุมอะไร)
+        <!-- แถบเครื่องมือ — ไม่มีกรอบ วางลอยบนพื้นหน้า: ค้นหากับปุ่มคำสั่งอยู่แถวบน
+             ตัวกรองอยู่แถวล่างพร้อมป้ายกำกับซ้ายมือ ที่บอกว่าชิปแถวนั้นคุมอะไร
              ปุ่มคำสั่งไม่มีขอบไม่มีพื้น ส่วนตัวกรองเป็นชิปกลม — รูปทรงบอกหน้าที่ว่าคนละชนิดกัน -->
-        <section class="overflow-hidden rounded-lg border border-line bg-surface" aria-label="ค้นหาและกรองตารางการแข่งขัน">
-          <div class="flex flex-wrap items-center gap-2 px-4 py-3 max-[560px]:px-3">
+        <section aria-label="ค้นหาและกรองตารางการแข่งขัน">
+          <div class="flex flex-wrap items-center gap-2">
             <div class="relative flex min-w-[190px] flex-1 items-center">
               <i class="icon-mask pointer-events-none absolute left-3 size-[15px] text-fg-mute" data-ic="search" aria-hidden="true"></i>
               <input class="w-full rounded-[11px] border border-line bg-surface-soft py-[9px] pr-3.5 pl-9 font-body text-[13px] text-fg placeholder:text-fg-mute focus-visible:border-transparent focus-visible:outline-2 focus-visible:-outline-offset-1 focus-visible:outline-brand" type="search" id="schedSearch" placeholder="ค้นหากีฬา / ประเภท / โรงเรียน" aria-label="ค้นหาในตารางการแข่งขัน" />
@@ -73,12 +73,12 @@
           </div>
 
           <!-- แถวตัวกรอง: ป้ายกำกับซ้าย ชิปขวา — จอแคบเลื่อนชิปแนวนอนแทนที่จะตกบรรทัดเป็นสี่แถว -->
-          <div class="flex flex-col border-t border-line" id="schedFilters">
-            <div class="flex items-start gap-3 px-4 py-2.5 max-[560px]:gap-2 max-[560px]:px-3" id="dayRow">
+          <div class="mt-3 flex flex-col gap-1.5" id="schedFilters">
+            <div class="flex items-start gap-3 max-[560px]:gap-2" id="dayRow">
               <span class="mt-[9px] w-[64px] flex-none text-[11.5px] text-fg-mute max-[560px]:w-[52px]">วันแข่ง</span>
               <nav class="flex flex-1 flex-wrap gap-1 max-[860px]:flex-nowrap max-[860px]:overflow-x-auto max-[860px]:[scrollbar-width:none] max-[860px]:[&::-webkit-scrollbar]:hidden max-[860px]:[mask-image:linear-gradient(to_right,#000_calc(100%-22px),transparent)]" id="dayJump" aria-label="กรองตามวันแข่งขัน"></nav>
             </div>
-            <div class="flex items-start gap-3 border-t border-line px-4 py-2.5 max-[560px]:gap-2 max-[560px]:px-3" id="sportRow">
+            <div class="flex items-start gap-3 max-[560px]:gap-2" id="sportRow">
               <span class="mt-[9px] w-[64px] flex-none text-[11.5px] text-fg-mute max-[560px]:w-[52px]">ชนิดกีฬา</span>
               <nav class="flex flex-1 flex-wrap gap-1 max-[860px]:flex-nowrap max-[860px]:overflow-x-auto max-[860px]:[scrollbar-width:none] max-[860px]:[&::-webkit-scrollbar]:hidden max-[860px]:[mask-image:linear-gradient(to_right,#000_calc(100%-22px),transparent)]" id="sportBar" aria-label="กรองตามชนิดกีฬา"></nav>
             </div>
