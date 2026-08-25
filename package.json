@@ -1,0 +1,31 @@
+{
+  "name": "satit-sports-dashboard",
+  "version": "1.0.0",
+  "description": "แดชบอร์ดประกาศผลการแข่งขันกีฬาสาธิตสามัคคี แบบเรียลไทม์ เชื่อมต่อ Google Sheets",
+  "type": "commonjs",
+  "main": "server.js",
+  "scripts": {
+    "build:css": "tailwindcss -i src/input.css -o public/css/app.css --minify",
+    "dev:css": "tailwindcss -i src/input.css -o public/css/app.css --watch",
+    "prestart": "npm run build:css",
+    "start": "node server.js",
+    "dev": "node --watch server.js"
+  },
+  "engines": {
+    "node": ">=18"
+  },
+  "dependencies": {
+    "express": "^4.19.2"
+  },
+  "keywords": [
+    "dashboard",
+    "sports",
+    "realtime",
+    "google-sheets"
+  ],
+  "license": "MIT",
+  "devDependencies": {
+    "@tailwindcss/cli": "^4.3.3",
+    "tailwindcss": "^4.3.3"
+  }
+}

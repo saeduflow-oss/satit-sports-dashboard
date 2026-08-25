@@ -1,0 +1,508 @@
+import {
+  el, esc, paintUiIcons, loadData, schedulePolling, initChrome, sportIcon, sportName, statusChip,
+  allDayItems, currentDay, dayLabel, dayPhotos, teamSides, splitScore,
+  schoolCores, matchScore, medalDiff, schoolByText, schoolCrest,
+  sportMascotImg, eventParts, EMPTY_TEXT, showLoadError
+} from './common.js';
+
+var chrome = initChrome('home');
+var RESULTS_TOP = 3;      // จำนวนการ์ดผลที่ประกาศแล้วบนหน้าหลัก = 3 คอลัมน์ในแถวเดียว
+
+/* =========================================================
+   ภาพบรรยากาศ — ดึงลิงก์รูปจากแท็บ "img" ในชีต (ดู dayPhotos ใน common.js)
+   ตอนนี้ชีตมีแค่ลิงก์ ภาพจึงหมุนวนได้ทุกวัน · ชีตยังไม่มีรูป = ซ่อนทั้งแถบ ไม่เว้นกล่องว่างไว้
+   ========================================================= */
+var HERO_MS = 6500;           // จังหวะเปลี่ยนรูปปกติ
+var HERO_MS_REDUCED = 9000;   // โหมดลดการเคลื่อนไหว: ไม่มีเฟดคอยบอกล่วงหน้า จึงทิ้งจังหวะนานขึ้น
+
+var hero = {
+  key: null,    // รายการภาพชุดปัจจุบัน ใช้เทียบว่าข้อมูลรอบใหม่เปลี่ยนภาพหรือไม่ (null = ยังไม่เคยวาด)
+  i: 0,
+  n: 0,
+  timer: null,
+  paused: false
+};
+
+function heroReduced() { return window.matchMedia('(prefers-reduced-motion: reduce)').matches; }
+
+/**
+ * โหลดเฉพาะรูปที่กำลังแสดงกับรูปถัดไป
+ * สไลด์ทุกใบซ้อนกันอยู่ในจอ loading="lazy" จึงไม่ช่วยอะไร — ถ้าใส่ src ครบตั้งแต่แรก
+ * 15 รูปก็คือดาวน์โหลดหลายเมกฯ พร้อมกันตอนเปิดหน้า และยิงพร็อกซีรัวทีเดียว 15 คำขอ
+ */
+function heroLoad(i) {
+  var stage = document.getElementById('heroStage');
+  [i, (i + 1) % hero.n].forEach(function (k) {
+    var img = stage.children[k] && stage.children[k].querySelector('img[data-src]');
+    if (!img) return;
+    img.src = img.getAttribute('data-src');
+    img.removeAttribute('data-src');
+  });
+}
+
+/** เส้นคืบหน้าที่ขอบล่าง — เริ่มนับใหม่ทุกครั้งที่เปลี่ยนรูป */
+function heroTick() {
+  var bar = document.getElementById('heroBar');
+  if (!bar) return;
+  if (hero.n < 2) { bar.style.animation = 'none'; bar.style.transform = 'scaleX(0)'; return; }
+  if (heroReduced()) {
+    // เส้นวิ่งก็คือการเคลื่อนไหว โหมดนี้จึงบอกความคืบหน้าเป็นขั้น ๆ ตามรูปที่กำลังแสดงแทน
+    bar.style.animation = 'none';
+    bar.style.transform = 'scaleX(' + ((hero.i + 1) / hero.n) + ')';
+    return;
+  }
+  bar.style.transform = '';
+  bar.style.animation = 'none';
+  void bar.offsetWidth;   // บังคับ reflow ไม่งั้นเบราว์เซอร์มองว่าเป็นอนิเมชันเดิมแล้วไม่เริ่มนับใหม่
+  bar.style.animation = 'heroFill ' + HERO_MS + 'ms linear forwards';
+  bar.style.animationPlayState = hero.paused ? 'paused' : 'running';
+}
+
+function heroShow(i) {
+  var stage = document.getElementById('heroStage');
+  if (!hero.n) return;
+  hero.i = (i + hero.n) % hero.n;
+  Array.prototype.forEach.call(stage.children, function (slide, k) {
+    var on = k === hero.i;
+    // สไลด์ที่กำลังแสดงบอกด้วย data-on ส่วนหน้าตา (จาง/ทึบ) อยู่ที่ตัวแปร data-[on=true] ในคลาสของสไลด์เอง
+    slide.dataset.on = on ? 'true' : 'false';
+    slide.setAttribute('aria-hidden', on ? 'false' : 'true');
+  });
+  document.getElementById('heroCount').textContent = (hero.i + 1) + ' / ' + hero.n;
+  heroLoad(hero.i);
+  heroTick();
+}
+
+function heroAutoplay() {
+  clearInterval(hero.timer);
+  if (hero.n < 2) return;
+  // เครื่องที่เปิด "ลดการเคลื่อนไหว" ยังต้องได้เห็นภาพครบทุกใบ ไม่ใช่ค้างอยู่ใบแรกใบเดียว
+  // จึงเลื่อนต่อแต่ตัดภาพทันทีไม่เฟด (ดู .hero-slide ใน styles.css)
+  hero.timer = setInterval(function () {
+    if (!hero.paused && !document.hidden) heroShow(hero.i + 1);
+  }, heroReduced() ? HERO_MS_REDUCED : HERO_MS);
+}
+
+/** ชี้เมาส์/โฟกัสค้างไว้ = หยุดดูรูปนั้น เส้นคืบหน้าต้องหยุดตามไม่ให้ขัดกับสิ่งที่เห็น */
+function heroPause(on) {
+  hero.paused = on;
+  var bar = document.getElementById('heroBar');
+  if (bar && bar.style.animation && bar.style.animation !== 'none') {
+    bar.style.animationPlayState = on ? 'paused' : 'running';
+  }
+}
+
+function heroSlide(data, day, p, idx, total) {
+  var sport = sportName(data, p.sportId);
+  var item = ((day && day.items) || []).filter(function (i) {
+    return i.sportId === p.sportId && (!p.time || i.time === p.time);
+  })[0];
+  var status = (item && item.status) || 'done';
+
+  // ภาพจากชีตที่มีแต่ลิงก์ ไม่รู้ว่าเป็นกีฬาอะไรของวันไหน — ปล่อยเป็นภาพเปล่า
+  // ดีกว่าติดป้ายสถานะที่เดาเอาเองแล้วผิด
+  var titled = !!(p.caption || sport || p.venue || p.credit || p.time);
+
+  var alt = titled
+    ? 'ภาพการแข่งขัน ' + (p.caption || sport) + (p.venue ? ' ที่' + p.venue : '') + ' วัน' + dayLabel(day)
+    : 'ภาพบรรยากาศการแข่งขัน ภาพที่ ' + (idx + 1) + ' จาก ' + total;
+
+  // รูปแรกใส่ src เลย ที่เหลือพักไว้ใน data-src ให้ heroLoad() ค่อยเติมเมื่อใกล้ถึงคิว
+  // no-referrer: เว็บฝากรูปหลายเจ้ากันการฝังรูปข้ามเว็บโดยดูจาก Referer แล้วตอบ error แทนรูป
+  var media = p.src
+    ? '<img class="block h-full w-full bg-surface-soft object-cover" ' + (idx === 0 ? 'src' : 'data-src') + '="' + esc(p.src) + '" ' +
+      'alt="' + esc(alt) + '" width="1200" height="675" referrerpolicy="no-referrer" decoding="async" />'
+    : '<span class="absolute inset-0 flex items-center justify-center bg-ink text-on-ink-soft">' +
+        sportIcon(p.sportId, 'h-[30%] w-[30%] opacity-90') + '</span>';
+
+  // ภาพที่ไม่มีคำบรรยายจะไม่มีแถบไล่สีของคำบรรยายรองอยู่ ต้องปูเงาบาง ๆ ให้จุดเลื่อนภาพยังมองเห็น
+  var plain = " after:absolute after:inset-x-0 after:bottom-0 after:h-[84px] after:bg-linear-to-t" +
+    " after:from-[oklch(16%_0.02_260/.55)] after:to-[oklch(16%_0.02_260/0)] after:content-['']";
+
+  // ลดการเคลื่อนไหว = ตัดภาพทันที ไม่เฟด แต่ยังเลื่อนภาพต่อ (ดู heroAutoplay)
+  var slide = el('figure',
+    'pointer-events-none absolute inset-0 m-0 opacity-0 transition-opacity duration-[450ms] ease-out' +
+    ' data-[on=true]:pointer-events-auto data-[on=true]:opacity-100 motion-reduce:transition-none' +
+    (titled ? '' : plain),
+    media +
+    (titled
+      ? '<figcaption class="absolute inset-x-0 bottom-0 bg-linear-to-t from-[oklch(16%_0.02_260/.94)] via-[oklch(16%_0.02_260/.72)] via-42% to-[oklch(16%_0.02_260/0)] px-[22px] pt-[46px] pb-5 max-[560px]:px-4 max-[560px]:pt-10 max-[560px]:pb-4">' +
+          '<span class="mb-[9px] flex flex-wrap items-center gap-2">' +
+            statusChip(status) +
+            (sport ? '<span class="rounded-full bg-white/[.18] px-[11px] py-1 text-[11.5px] text-white">' + esc(sport) + '</span>' : '') +
+            (dayLabel(day) ? '<span class="rounded-full bg-white/[.18] px-[11px] py-1 text-[11.5px] text-white">' + esc(dayLabel(day)) + '</span>' : '') +
+          '</span>' +
+          '<p class="m-0 max-w-[34ch] font-display text-[21px] leading-[1.35] text-balance text-white max-[560px]:text-[18px]">' + esc(p.caption || sport) + '</p>' +
+          '<p class="mt-1.5 text-[12.5px] text-white/[.82]">' +
+            [p.time, p.venue, p.credit ? 'ภาพ: ' + p.credit : ''].filter(Boolean).map(esc).join(' · ') +
+          '</p>' +
+        '</figcaption>'
+      : ''));
+  slide.setAttribute('role', 'group');
+  slide.setAttribute('aria-roledescription', 'ภาพ');
+  slide.setAttribute('aria-label', (idx + 1) + ' จาก ' + total);
+  return slide;
+}
+
+function renderHero(data, day) {
+  var stage = document.getElementById('heroStage');
+  var photos = dayPhotos(data, day);
+
+  var key = photos.map(function (p) { return p.id || p.src; }).join('|');
+  if (key === hero.key) return;   // ภาพชุดเดิม — ไม่ต้องสร้างใหม่ให้สไลด์กระโดดกลับภาพแรก
+  hero.key = key;
+
+  stage.innerHTML = '';
+  hero.n = photos.length;
+  hero.i = 0;
+
+  // ยังไม่มีภาพในชีต ให้ซ่อนทั้งแถบ ดีกว่าเว้นกล่องว่างไว้บนสุดของหน้า
+  document.getElementById('hero').hidden = !photos.length;
+  if (!photos.length) {
+    clearInterval(hero.timer);
+    return;
+  }
+
+  photos.forEach(function (p, i) { stage.appendChild(heroSlide(data, day, p, i, photos.length)); });
+
+  // รูปเดียวไม่มีอะไรให้เลื่อน ตัวบอกตำแหน่งก็ไม่ต้องมี
+  var single = photos.length < 2;
+  document.getElementById('heroCount').hidden = single;
+  document.getElementById('heroProgress').hidden = single;
+
+  paintUiIcons(stage);
+  heroShow(0);
+  heroAutoplay();
+}
+
+function bindHero() {
+  var box = document.getElementById('hero');
+  // ไม่มีปุ่มลูกศรแล้ว แต่ยังรับลูกศรซ้าย/ขวาจากคีย์บอร์ด เผื่อคนที่ไม่ได้ใช้เมาส์
+  ['pointerenter', 'focusin'].forEach(function (e) { box.addEventListener(e, function () { heroPause(true); }); });
+  ['pointerleave', 'focusout'].forEach(function (e) { box.addEventListener(e, function () { heroPause(false); }); });
+  box.addEventListener('keydown', function (e) {
+    if (e.key === 'ArrowLeft') { heroShow(hero.i - 1); heroAutoplay(); }
+    if (e.key === 'ArrowRight') { heroShow(hero.i + 1); heroAutoplay(); }
+  });
+}
+
+/* ===================== แมตช์ที่กำลังแข่ง ===================== */
+/* =========================================================
+   การ์ดแมตช์ — การ์ดที่กินความกว้างทั้งแถว (วันที่มีรายการเดียว หรือใบสุดท้ายของแถวที่ไม่เต็ม)
+   เปลี่ยนเป็นแนวนอนตั้งแต่จอ 700px ขึ้นไป แทนการยืดการ์ดแนวตั้งให้กว้างจนเนื้อหาลอย
+   ยกเว้นชุด 3 ใบ ที่พอถึง 1000px จะได้ 3 คอลัมน์เต็มแถวพอดี ใบสุดท้ายจึงกลับเป็นแนวตั้งเหมือนใบอื่น
+   ========================================================= */
+var CARD_PLAIN = { card: '', top: '', ic: '', icIcon: '', art: '', mascot: '', sport: '', kind: '', body: '', score: '', crest: '', foot: '' };
+
+/** ชุดคลาสของการ์ดแนวนอน (มีผลตั้งแต่ 700px) */
+var CARD_WIDE = {
+  card: ' min-[700px]:grid min-[700px]:grid-cols-[minmax(0,1fr)_minmax(300px,42%)] min-[700px]:content-center min-[700px]:items-center min-[700px]:gap-x-[34px] min-[700px]:gap-y-2 min-[700px]:px-[26px] min-[700px]:py-[22px]',
+  top: ' min-[700px]:col-start-1 min-[700px]:row-start-1 min-[700px]:gap-[13px]',
+  ic: ' min-[700px]:size-[46px] min-[700px]:rounded-[14px]',
+  icIcon: ' min-[700px]:size-[25px]',
+  art: ' min-[700px]:min-h-[56px] min-[700px]:w-[46px]',
+  mascot: ' min-[700px]:max-h-[60px]',
+  sport: ' min-[700px]:text-[19px]',
+  kind: ' min-[700px]:text-[13.5px]',
+  body: ' min-[700px]:col-start-2 min-[700px]:row-span-2 min-[700px]:row-start-1 min-[700px]:border-l min-[700px]:border-line min-[700px]:py-1 min-[700px]:pl-[30px]',
+  score: ' min-[700px]:text-[38px]',
+  crest: ' min-[700px]:size-[52px] min-[700px]:text-[21px]',
+  foot: ' min-[700px]:col-start-1 min-[700px]:row-start-2 min-[700px]:border-t-0 min-[700px]:pt-0.5'
+};
+
+/** ...แล้วถอยกลับเป็นการ์ดแนวตั้งที่ 1000px (เฉพาะใบสุดท้ายของชุด 3 ใบ) */
+var CARD_REVERT = {
+  card: ' min-[1000px]:flex min-[1000px]:flex-col min-[1000px]:items-stretch min-[1000px]:gap-3 min-[1000px]:px-[18px] min-[1000px]:pt-[15px] min-[1000px]:pb-3.5',
+  top: ' min-[1000px]:gap-[11px]',
+  ic: ' min-[1000px]:size-[38px] min-[1000px]:rounded-xl',
+  icIcon: ' min-[1000px]:size-[22px]',
+  art: ' min-[1000px]:min-h-[46px] min-[1000px]:w-[38px]',
+  mascot: ' min-[1000px]:max-h-[50px]',
+  sport: ' min-[1000px]:text-[15.5px]',
+  kind: ' min-[1000px]:text-[12.5px]',
+  body: ' min-[1000px]:border-l-0 min-[1000px]:py-0.5 min-[1000px]:pl-0',
+  score: ' min-[1000px]:text-[29px]',
+  crest: ' min-[1000px]:size-11 min-[1000px]:text-[18px]',
+  foot: ' min-[1000px]:border-t min-[1000px]:pt-[11px]'
+};
+
+/** ตราหน้าการ์ด: หาโรงเรียนจากชื่อทีมเพื่อใช้โลโก้จริง ไม่เจอก็ใช้ตัวอักษรแรก */
+function crest(data, name, size, isSelf) {
+  return schoolCrest(schoolByText(data, name) || { school: name }, size,
+    isSelf ? 'border-transparent bg-brand-100 text-brand-strong' : '');
+}
+
+/** @param {string} [mode] - '' การ์ดปกติ · 'wide' แนวนอน · 'wide-3' แนวนอนแล้วถอยกลับที่ 1000px */
+function matchCard(data, item, cores, mode) {
+  var sides = teamSides(item.teams);
+  var score = splitScore(item.score);
+  var sport = sportName(data, item.sportId);
+  var head = eventParts(sport, item.event);
+
+  // ป้าย "ยังไม่เป็นทางการ" ติดเฉพาะรายการที่มีผลกรอกไว้แล้ว รายการที่ยังไม่แข่งไม่มีผลให้พูดถึง
+  var foot = [item.venue, (item.unofficial && item.score) ? 'ผลยังไม่เป็นทางการ' : '']
+    .filter(Boolean).map(esc).join(' · ');
+
+  var live = item.status === 'live';
+  var w = mode ? CARD_WIDE : CARD_PLAIN;              // ชุดคลาสของการ์ดแนวนอน
+  var r = mode === 'wide-3' ? CARD_REVERT : CARD_PLAIN; // ...และชุดที่ถอยกลับเป็นแนวตั้ง
+
+  // ฝ่ายไหนนำ/ชนะ ใช้บอกด้วยสีของตัวเลข (เทียบเป็นตัวเลขเท่านั้น สกอร์ที่ไม่ใช่ตัวเลขไม่เน้นสี)
+  // ผลที่ประกาศแล้ว: ฝ่ายชนะเป็นสีเน้น ฝ่ายแพ้จาง · แมตช์สดใช้สีสถานะทั้งคู่
+  var lead = ['', ''];
+  if (score && !live) {
+    var a = parseInt(score[0], 10), b = parseInt(score[1], 10);
+    if (!isNaN(a) && !isNaN(b) && a !== b) {
+      lead = a > b ? ['text-brand-strong', 'text-fg-mute'] : ['text-fg-mute', 'text-brand-strong'];
+    }
+  }
+  if (live) lead = ['text-live', 'text-live'];
+
+  var teamBox = 'flex min-w-0 flex-col items-center gap-2 text-center';
+  var crestSize = 'size-11 text-[18px]' + w.crest + r.crest;
+  var nameCls = 'text-[13px] leading-[1.35] max-[560px]:text-[12.5px] ';
+  var scoreBox = '<div class="flex items-baseline gap-[7px] font-mono text-[29px] tabular-nums' + w.score + r.score + '">';
+  var bodyBox = '<div class="grid items-center gap-2.5 py-0.5' + w.body + r.body;
+
+  var body;
+  if (sides.length >= 2) {
+    var selfA = matchScore(sides[0], cores) > 0, selfB = matchScore(sides[1], cores) > 0;
+    body =
+      bodyBox + ' grid-cols-[1fr_auto_1fr]">' +
+        '<div class="' + teamBox + '">' + crest(data, sides[0], crestSize, selfA) +
+          '<span class="' + nameCls + (selfA ? 'text-fg' : 'text-fg-soft') + '">' + esc(sides[0]) + '</span></div>' +
+        scoreBox +
+          (score
+            ? '<span class="' + lead[0] + '">' + esc(score[0]) + '</span>' +
+              '<span class="text-[19px] text-fg-mute" aria-hidden="true">–</span>' +
+              '<span class="' + lead[1] + '">' + esc(score[1]) + '</span>'
+            : '<span class="font-body text-[14px] text-fg-soft">' + esc(item.time || 'รอเริ่ม') + '</span>') +
+        '</div>' +
+        '<div class="' + teamBox + '">' + crest(data, sides[1], crestSize, selfB) +
+          '<span class="' + nameCls + (selfB ? 'text-fg' : 'text-fg-soft') + '">' + esc(sides[1]) + '</span></div>' +
+      '</div>';
+  } else {
+    // รายการที่ไม่ใช่การพบกันสองฝ่าย: ทีมเดียวเรียงแนวนอนชิดซ้าย ไม่ต้องมีคอลัมน์ว่างคู่กัน
+    body =
+      bodyBox + ' grid-cols-[1fr_auto]">' +
+        '<div class="flex min-w-0 flex-row items-center gap-2 text-left">' + crest(data, sides[0] || sport, crestSize) +
+          '<span class="' + nameCls + 'text-fg-soft">' + esc(sides[0] || 'รวมทุกโรงเรียน') + '</span></div>' +
+        scoreBox + '<span class="font-body text-[14px] text-fg-soft">' + esc(item.score || item.time || '') + '</span></div>' +
+      '</div>';
+  }
+
+  // หัวการ์ด: มาสคอตประจำกีฬายืนเต็มตัวข้างชื่อกีฬา ไม่มีกล่องครอบเพื่อให้ได้ขนาดใหญ่สุด
+  // กีฬาที่ยังไม่มีมาสคอตใช้ไอคอนเส้นในกล่องสีเน้นเหมือนเดิม
+  var mascot = sportMascotImg(item.sportId, 'max-h-[50px] w-full object-contain object-bottom' + w.mascot + r.mascot);
+  var badge = mascot
+    ? '<span class="flex min-h-[46px] w-[38px] flex-none items-end justify-center self-stretch' + w.art + r.art + '">' + mascot + '</span>'
+    : '<span class="flex size-[38px] flex-none items-center justify-center overflow-hidden rounded-xl ' +
+        (live ? 'bg-live-bg text-live' : 'bg-brand-100 text-brand-strong') + w.ic + r.ic + '">' +
+        sportIcon(item.sportId, 'size-[22px]' + w.icIcon + r.icIcon) + '</span>';
+
+  // การ์ดอยู่ในแผงสีขาวแล้ว จึงใช้พื้นอ่อนแทนเงา ให้เป็นภาษาเดียวกับตารางเหรียญ
+  // การ์ดสด: ยกขึ้นเป็นพื้นขาวและตีกรอบสีสด ให้สะดุดตากว่าการ์ดที่ประกาศผลแล้ว
+  return el('article',
+    'flex flex-col gap-3 rounded-lg border px-[18px] pt-[15px] pb-3.5 ' +
+    (live ? 'border-live bg-surface' : 'border-line bg-surface-soft') + w.card + r.card,
+    // min-h ตรึงความสูงหัวการ์ดให้เท่ากันทุกใบ ใบที่ยังไม่มีมาสคอตจะได้ไม่ลอยสูงกว่าเพื่อน
+    '<div class="flex min-h-[46px] items-start gap-2.5' + w.top + r.top + '">' +
+      badge +
+      '<span class="flex min-w-0 flex-1 flex-col gap-0.5">' +
+        '<span class="font-display text-[15.5px] leading-[1.3] text-fg' + w.sport + r.sport + '">' + esc(head.sport) + '</span>' +
+        (head.kind ? '<span class="text-[12.5px] leading-[1.4] text-fg-mute' + w.kind + r.kind + '">' + esc(head.kind) + '</span>' : '') +
+      '</span>' +
+      // สีสถานะเหลือไว้เฉพาะ "สด" ที่เป็นข้อมูลจริง ๆ ของแมตช์ที่กำลังเกิดขึ้น
+      (live ? '<span class="mt-[3px] flex-none">' + statusChip('live') + '</span>' : '') +
+    '</div>' +
+    body +
+    // ชีตกรอกว่า "ไม่เป็นทางการ" = กรรมการยังไม่รับรองผล ต้องบอกไว้ ไม่ปล่อยให้อ่านเป็นผลรับรองแล้ว
+    (foot ? '<p class="m-0 border-t border-line pt-[11px] text-[12.5px] text-fg-mute' + w.foot + r.foot + '">' + foot + '</p>' : ''));
+}
+
+/**
+ * รายการที่ "ประกาศผลแล้วและกรอกสกอร์ไว้" เรียงจากที่ประกาศล่าสุดมาก่อน
+ * ไล่จากท้ายรายการ เพราะชีตเรียงตามวันแล้วตามเวลาแข่ง รายการท้ายสุดคือที่เพิ่งกรอกผล
+ * ดึงข้ามวันได้ วันที่เพิ่งเริ่มแข่งจะได้ไม่เหลือการ์ดแค่ใบเดียว
+ */
+function announcedResults(data, limit) {
+  var rows = [];
+  (data.days || []).forEach(function (d) {
+    (d.items || []).forEach(function (i) {
+      if (i.status === 'done' && i.score) rows.push({ item: i, day: d });
+    });
+  });
+  return rows.slice(-limit).reverse();
+}
+
+/* จำนวนคอลัมน์ผูกกับจำนวนการ์ด ไม่ใช้ auto-fit เพราะ auto-fit ปล่อยให้แถวสุดท้าย
+   เหลือช่องว่างเมื่อจำนวนการ์ดหารไม่ลงตัว — ใบสุดท้ายของแถวที่ไม่เต็มจะยืดกินคอลัมน์ที่เหลือแทน
+   3 รายการต้องอยู่แถวเดียวกัน จึงเปิด 3 คอลัมน์ให้เร็วกว่าชุดอื่น (แคบกว่า 1000px การ์ดจะเหลือ
+   กว้างไม่ถึง 170px ตราโรงเรียนสองข้างกับสกอร์จะเบียดกัน) */
+var GRID_BASE = 'grid grid-cols-1 gap-4';
+var GRID_BY_COUNT = {
+  1: GRID_BASE,
+  2: GRID_BASE + ' min-[700px]:grid-cols-2',
+  3: GRID_BASE + ' min-[700px]:grid-cols-2 min-[1000px]:grid-cols-3',
+  4: GRID_BASE + ' min-[700px]:grid-cols-2',
+  5: GRID_BASE + ' min-[700px]:grid-cols-2 min-[1080px]:grid-cols-3',
+  6: GRID_BASE + ' min-[700px]:grid-cols-2 min-[1080px]:grid-cols-3'
+};
+/** ใบสุดท้ายของชุดที่แถวไม่เต็ม ยืดกินคอลัมน์ที่เหลือ */
+var SPAN_LAST = { 3: 'min-[700px]:col-span-2 min-[1000px]:col-span-1', 5: 'min-[700px]:col-span-2' };
+/** ...และเมื่อกว้างทั้งแถวแล้ว ก็เปลี่ยนเป็นการ์ดแนวนอนด้วย */
+var WIDE_LAST = { 1: 'wide', 3: 'wide-3', 5: 'wide' };
+
+function renderLive(data, day) {
+  var host = document.getElementById('liveGrid'); host.innerHTML = '';
+  var flag = document.getElementById('liveFlag');
+  var title = document.getElementById('liveTitle');
+  var self = data.medalTable.filter(function (m) { return m.isSelf; })[0];
+  var cores = self ? schoolCores(self) : [];
+  var items = (day && day.items) || [];
+
+  // ลำดับความสำคัญ: กำลังแข่ง > ผลที่ประกาศแล้วล่าสุด > รายการถัดไป (เมื่อยังไม่มีผลเลย)
+  var live = items.filter(function (i) { return i.status === 'live'; });
+  var upcoming = items.filter(function (i) { return i.status === 'upcoming'; });
+  var announced = announcedResults(data, RESULTS_TOP);
+
+  var list, heading;
+  if (live.length) {
+    list = live.slice(0, 6);
+    heading = 'กำลังแข่งขัน';
+  } else if (announced.length) {
+    list = announced.map(function (r) { return r.item; });
+    var sameDay = announced.every(function (r) { return r.day === day; });
+    heading = (sameDay && dayLabel(day)) ? 'ผลการแข่งขันวัน' + dayLabel(day) : 'ผลการแข่งขันล่าสุด';
+  } else {
+    list = upcoming.slice(0, 3);
+    heading = 'รายการถัดไป';
+  }
+
+  flag.hidden = !live.length;
+  title.textContent = heading;
+
+  if (!list.length) {
+    host.appendChild(el('div', EMPTY_TEXT, 'ยังไม่มีรายการแข่งขันของวัน' + esc(dayLabel(day) || 'นี้')));
+    return;
+  }
+
+  host.className = GRID_BY_COUNT[list.length] || GRID_BY_COUNT[6];
+  var last = list.length - 1;
+  list.forEach(function (i, k) {
+    var span = (k === last && SPAN_LAST[list.length]) || '';
+    var card = matchCard(data, i, cores, k === last ? WIDE_LAST[list.length] : '');
+    if (span) card.className += ' ' + span;
+    host.appendChild(card);
+  });
+  paintUiIcons(host);
+}
+
+/* ===================== แถบอันดับของโรงเรียนเรา =====================
+   หน้าหลักตอบคำถามเดียว: "ตอนนี้เราอยู่อันดับไหน" ตัวเลขอันดับจึงเป็นของชิ้นใหญ่สุดในแถบ
+   ส่วนตารางอันดับทั้ง 16 โรงเรียนอยู่หน้า "อันดับเหรียญรางวัล" — ไม่เอามาย่อซ้ำที่นี่อีก
+   ========================================================= */
+var MEDAL_KINDS = [['gold', 'ทอง', 'bg-gold'], ['silver', 'เงิน', 'bg-silver-ink'], ['bronze', 'ทองแดง', 'bg-bronze']];
+
+var RB_MEDAL = 'inline-flex items-center gap-[5px] text-[12.5px] text-fg-soft';
+var RB_NUM = 'font-mono text-[20px] font-normal text-fg tabular-nums max-[860px]:text-[18px]';
+
+/** ตัวเลขเหรียญของโรงเรียนเรา — ไอคอนเหรียญคู่กับข้อความกำกับเสมอ ไม่สื่อด้วยสีอย่างเดียว */
+function rankMedals(m) {
+  return MEDAL_KINDS.map(function (c) {
+    return '<span class="' + RB_MEDAL + '">' +
+      '<i class="medal-mic size-[14px] ' + c[2] + '" aria-hidden="true"></i>' +
+      '<b class="' + RB_NUM + '">' + m[c[0]] + '</b>' + c[1] + '</span>';
+  }).join('') +
+  // "รวม" ไม่ใช่ชนิดเหรียญ จึงไม่มีไอคอนเหรียญ — เป็นผลบวก ไม่ใช่ของอีกอย่างหนึ่ง
+  '<span class="' + RB_MEDAL + ' border-l border-line pl-[18px] max-[860px]:pl-3.5">' +
+    '<b class="' + RB_NUM + '">' + (m.gold + m.silver + m.bronze) + '</b>รวม</span>';
+}
+
+/** ส่วนต่างกับโรงเรียนที่อยู่ติดกันในตาราง — บอกว่าต้องได้อีกกี่เหรียญถึงจะขยับอันดับ */
+function rankGap(all, self, idx) {
+  if (idx > 0) {
+    var up = all[idx - 1], dU = medalDiff(up, self);
+    return dU
+      ? 'ตามอันดับ ' + up.rank + ' ' + esc(up.school) + ' อยู่ ' + dU.n + ' ' + dU.label
+      : 'มีเหรียญเท่ากับอันดับ ' + up.rank + ' ' + esc(up.school) + ' ทุกชนิด';
+  }
+  if (all.length < 2) return 'อยู่อันดับ 1 ของตารางเหรียญ';
+  var down = all[1], dD = medalDiff(self, down);
+  return dD
+    ? 'อันดับ 1 ของตาราง · นำ ' + esc(down.school) + ' อยู่ ' + dD.n + ' ' + dD.label
+    : 'อันดับ 1 ของตาราง · มีเหรียญเท่ากับอันดับ 2 ทุกชนิด';
+}
+
+function renderRankBar(data) {
+  var host = document.getElementById('rankBar');
+  var all = data.medalTable || [];
+  var self = all.filter(function (m) { return m.isSelf; })[0];
+  // ชีตยังไม่มีแถวของโรงเรียนเรา = ไม่มีอะไรจะบอก ซ่อนทั้งแถบ ไม่ทิ้งกล่องว่างไว้
+  if (!self) { host.hidden = true; return; }
+  host.hidden = false;
+
+  // ลำดับใน DOM = ลำดับที่ต้องอ่าน: อันดับก่อน แล้วค่อยบอกว่าของใครและห่างจากใครแค่ไหน
+  // อันดับเป็นของชิ้นเดียวที่ใช้สีเน้น — เส้นคั่นกันไม่ให้อ่านติดกับชื่อโรงเรียน
+  // จอแคบ: อันดับกับชื่อโรงเรียนอยู่บรรทัดเดียวกัน เหรียญลงบรรทัดล่างเต็มความกว้าง
+  host.innerHTML =
+    '<p class="m-0 flex flex-none items-baseline gap-[9px] border-r border-line pr-6 max-[860px]:pr-[18px]' +
+      ' max-[560px]:flex-[1_1_100%] max-[560px]:border-r-0 max-[560px]:border-b max-[560px]:p-0 max-[560px]:pb-3">' +
+      '<span class="text-[12.5px] tracking-[.06em] text-fg-soft">อันดับ</span>' +
+      '<b class="font-mono text-[54px] leading-[.9] font-normal text-brand-strong tabular-nums max-[860px]:text-[42px]">' + self.rank + '</b>' +
+      '<span class="text-[12px] leading-[1.3] text-fg-mute">จาก ' + all.length + '<br />โรงเรียน</span></p>' +
+    '<div class="flex min-w-0 flex-[1_1_300px] items-center gap-3.5 max-[860px]:flex-[1_1_200px]">' +
+      schoolCrest(self, 'size-[52px] text-[21px] max-[560px]:size-11 max-[560px]:text-[18px]') +
+      '<div class="min-w-0">' +
+        '<p class="m-0 font-display text-[16px] leading-[1.35]">' + esc(self.fullName || self.school) + '</p>' +
+        '<p class="mt-[3px] text-[12.5px] leading-[1.5] text-fg-mute">' + rankGap(all, self, all.indexOf(self)) + '</p>' +
+      '</div>' +
+    '</div>' +
+    '<div class="flex flex-wrap items-center gap-[18px] max-[860px]:flex-[1_1_100%] max-[860px]:gap-4 max-[860px]:border-t max-[860px]:border-line max-[860px]:pt-[13px]">' +
+      rankMedals(self) + '</div>' +
+    '<a class="ml-auto inline-flex min-h-[34px] flex-none items-center rounded-full border border-line px-[13px] text-[12.5px] whitespace-nowrap text-fg-soft no-underline transition-[border-color,color] duration-150 hover:border-line-strong hover:text-fg focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand max-[560px]:flex-[1_1_100%] max-[560px]:justify-center" href="medals.html">ดูตารางเต็ม</a>';
+}
+
+/* ===================== ประกาศผลล่าสุด ===================== */
+function renderTimeline(data) {
+  var host = document.getElementById('timeline'); host.innerHTML = '';
+  var items = allDayItems(data).filter(function (i) { return i.status !== 'upcoming'; })
+    .sort(function (a, b) { return a.status === 'live' ? -1 : 1; }).slice(0, 6);
+  if (!items.length) { host.appendChild(el('div', EMPTY_TEXT, 'ยังไม่มีผลการแข่งขันประกาศ')); return; }
+  items.forEach(function (i) {
+    var head = eventParts(sportName(data, i.sportId), i.event);
+    host.appendChild(el('div', 'grid grid-cols-[auto_1fr_auto] items-center gap-[13px] border-t border-line py-3 first:border-t-0',
+      // ผลที่ประกาศแล้วใช้สีเน้นเดียวกับไอคอนบนการ์ดแมตช์ เหลือสีสถานะไว้ให้ "สด" ใบเดียว
+      '<span class="flex size-9 flex-none items-center justify-center rounded-[11px] ' +
+        (i.status === 'live' ? 'bg-live-bg text-live' : 'bg-brand-100 text-brand-strong') + '">' +
+        sportIcon(i.sportId, 'size-[22px]') + '</span>' +
+      '<span>' +
+        '<p class="mb-[3px] text-[15px]">' + esc(head.sport) +
+          (head.kind ? ' <span class="text-[13px] text-fg-mute">' + esc(head.kind) + '</span>' : '') + '</p>' +
+        '<p class="m-0 text-[13px] text-fg-soft">' + esc(i.teams || i.score || '') + '</p>' +
+      '</span>' +
+      // ทั้งแผงคือผลที่ประกาศแล้ว ป้ายจึงเหลือไว้เฉพาะรายการที่ยังแข่งอยู่ ที่เหลือแสดงสกอร์แทน
+      (i.status === 'live'
+        ? statusChip('live')
+        : (i.score
+            ? '<span class="font-mono text-[17px] whitespace-nowrap text-brand-strong tabular-nums">' + esc(i.score) + '</span>'
+            : ''))));
+  });
+  paintUiIcons(host);
+}
+
+function renderAll(data) {
+  var day = currentDay(data);
+  renderHero(data, day);
+  renderLive(data, day);
+  renderRankBar(data);
+  renderTimeline(data);
+  chrome.onData(data);
+}
+
+bindHero();
+
+loadData().then(function (data) {
+  renderAll(data);
+  schedulePolling(renderAll);
+}).catch(showLoadError);

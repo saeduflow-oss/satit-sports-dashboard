@@ -1,0 +1,7 @@
+node_modules/
+.DS_Store
+*.log
+
+# ไฟล์ CSS ที่ Tailwind สร้างจาก src/input.css — สร้างใหม่ได้ด้วย `npm run build:css`
+# (npm start จะ build ให้เองอยู่แล้วก่อนเปิดเซิร์ฟเวอร์)
+public/css/app.css

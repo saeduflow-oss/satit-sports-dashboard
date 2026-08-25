@@ -1,0 +1,983 @@
+/* =========================================================
+   styles.css — แดชบอร์ดกีฬาสาธิตสามัคคี (Admin layout สีสันสดใส)
+   ฟอนต์: Srinakharinwirot (ไฟล์ที่ /fonts เท่านั้น ไม่มีฟอนต์สำรองอื่น)
+   ========================================================= */
+
+@font-face {
+  font-family: 'Srinakharinwirot';
+  src: url('../fonts/srinakharinwirot-regular.eot');
+  src: url('../fonts/srinakharinwirot-regular.eot?#iefix') format('embedded-opentype'),
+       url('../fonts/srinakharinwirot-regular.woff2') format('woff2'),
+       url('../fonts/srinakharinwirot-regular.woff') format('woff');
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+
+:root {
+  --paper: oklch(96.5% 0.012 250);
+  --surface: oklch(99% 0.002 250);
+  --surface-soft: oklch(95.5% 0.01 250);
+  --border: oklch(91% 0.012 250);
+  --border-strong: oklch(83% 0.016 250);
+  --text-primary: oklch(22% 0.03 260);
+  --text-secondary: oklch(42% 0.02 260);
+  --text-muted: oklch(52% 0.018 260);
+
+  --ink: oklch(22% 0.03 260);
+  --on-ink: oklch(99% 0.002 250);
+  --on-ink-soft: oklch(99% 0.002 250 / .65);
+
+  /* แถบวันแข่งขันบนหน้าหลัก: พื้นเข้มถาวรทั้งสองธีม จะได้เป็นจุดยึดสายตาเดียวของหน้า */
+  --board: oklch(25% 0.045 262);
+  --on-board: oklch(98% 0.004 250);
+  --on-board-soft: oklch(98% 0.004 250 / .72);
+  --board-line: oklch(98% 0.004 250 / .18);
+
+  /* หนึ่งสีเน้นสำหรับส่วนที่โต้ตอบได้ (ลิงก์ เมนูที่เลือก โฟกัส) — ไม่ใช่สีตกแต่ง */
+  --brand: oklch(56% 0.19 260);
+  --brand-strong: oklch(48% 0.19 260);
+  --brand-100: oklch(93% 0.03 260);
+
+  /* สีเหรียญ: บอกความหมายจริง ไม่ใช่สีตกแต่ง */
+  --medal-gold: oklch(74% 0.15 80);
+  --medal-silver: oklch(74% 0.008 250);
+  --medal-bronze: oklch(60% 0.12 45);
+  /* เฉดเข้มสำหรับ "ตัวเลข" โดยเฉพาะ — สีเหรียญสดเกินกว่าจะอ่านเป็นตัวหนังสือกลางแดด */
+  --medal-gold-ink: oklch(52% 0.13 75);
+  --medal-silver-ink: oklch(48% 0.012 250);
+  --medal-bronze-ink: oklch(47% 0.13 42);
+  --podium-1: var(--medal-gold); --podium-2: var(--medal-silver); --podium-3: var(--medal-bronze); --on-podium: var(--ink);
+  /* รูปทรงเหรียญ (วงกลมเจาะดาว) ใช้เป็น mask ให้ .mt-mic — รูปทรงเดียว ย้อมได้ 3 สี
+     ประกาศเป็นตัวแปรเพราะเป็นรูปทรง ไม่ใช่สี จึงไม่ต้องมีคู่ของธีมมืด */
+  --mic-medal: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath fill='%23000' fill-rule='evenodd' d='M2.8 12a9.2 9.2 0 1 0 18.4 0 9.2 9.2 0 1 0-18.4 0zM12 7.4l1.15 3.02 3.22.16-2.52 2.02.85 3.12L12 13.95l-2.7 1.77.85-3.12-2.52-2.02 3.22-.16z'/%3E%3C/svg%3E");
+
+  /* สีสถานะ: จุดเดียวในเว็บที่ "สด/กำลังเกิดขึ้น" ได้ใช้สี ข้อมูลนิ่งอื่นทั้งหมดเป็นกลาง */
+  --live: oklch(64% 0.20 350); --live-bg: oklch(94% 0.03 350);
+  --done: oklch(62% 0.13 155); --done-bg: oklch(93% 0.04 155);
+  --upcoming: var(--text-muted); --upcoming-bg: var(--surface-soft);
+
+  --side-bg: var(--surface);
+  --side-text: var(--text-secondary);
+  --side-active-bg: var(--brand);
+
+  --shadow: 0 6px 20px oklch(40% 0.04 260 / .07);
+  --shadow-card: 0 14px 32px oklch(40% 0.04 260 / .12);
+
+  --font-display: 'Srinakharinwirot', sans-serif;
+  --font-body: 'Srinakharinwirot', sans-serif;
+  --font-mono: 'Srinakharinwirot', monospace;
+  --radius-lg: 18px; --radius-md: 14px; --radius-sm: 10px;
+  --side-w: 252px;
+}
+
+:root[data-theme="dark"] {
+  --paper: oklch(17% 0.025 260); --surface: oklch(22% 0.028 260); --surface-soft: oklch(20% 0.026 260);
+  --border: oklch(31% 0.03 260); --border-strong: oklch(39% 0.03 260);
+  --text-primary: oklch(93% 0.012 260); --text-secondary: oklch(75% 0.018 260); --text-muted: oklch(60% 0.016 260);
+  --ink: oklch(93% 0.012 260); --on-ink: oklch(17% 0.025 260); --on-ink-soft: oklch(17% 0.025 260 / .6);
+  --board: oklch(27% 0.04 262);
+  --brand: oklch(68% 0.17 260); --brand-strong: oklch(74% 0.16 260); --brand-100: oklch(28% 0.05 260);
+  --medal-gold: oklch(78% 0.13 82); --medal-silver: oklch(78% 0.008 250); --medal-bronze: oklch(66% 0.12 45);
+  --medal-gold-ink: oklch(82% 0.12 84); --medal-silver-ink: oklch(80% 0.01 250); --medal-bronze-ink: oklch(72% 0.12 45);
+  --podium-1: var(--medal-gold); --podium-2: var(--medal-silver); --podium-3: var(--medal-bronze);
+  --live: oklch(72% 0.17 350); --live-bg: oklch(28% 0.05 350);
+  --done: oklch(68% 0.13 155); --done-bg: oklch(25% 0.04 155);
+  --upcoming: var(--text-secondary); --upcoming-bg: oklch(26% 0.02 260);
+  --side-bg: var(--surface); --side-text: var(--text-secondary); --side-active-bg: var(--brand);
+  --shadow: 0 1px 2px oklch(0% 0 0 / .3), 0 8px 24px oklch(0% 0 0 / .4);
+  --shadow-card: 0 10px 26px oklch(0% 0 0 / .45);
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --paper: oklch(17% 0.025 260); --surface: oklch(22% 0.028 260); --surface-soft: oklch(20% 0.026 260);
+    --border: oklch(31% 0.03 260); --border-strong: oklch(39% 0.03 260);
+    --text-primary: oklch(93% 0.012 260); --text-secondary: oklch(75% 0.018 260); --text-muted: oklch(60% 0.016 260);
+    --ink: oklch(93% 0.012 260); --on-ink: oklch(17% 0.025 260); --on-ink-soft: oklch(17% 0.025 260 / .6);
+  --board: oklch(27% 0.04 262);
+    --brand: oklch(68% 0.17 260); --brand-strong: oklch(74% 0.16 260); --brand-100: oklch(28% 0.05 260);
+    --medal-gold: oklch(78% 0.13 82); --medal-silver: oklch(78% 0.008 250); --medal-bronze: oklch(66% 0.12 45);
+  --medal-gold-ink: oklch(82% 0.12 84); --medal-silver-ink: oklch(80% 0.01 250); --medal-bronze-ink: oklch(72% 0.12 45);
+    --podium-1: var(--medal-gold); --podium-2: var(--medal-silver); --podium-3: var(--medal-bronze);
+    --live: oklch(72% 0.17 350); --live-bg: oklch(28% 0.05 350);
+    --done: oklch(68% 0.13 155); --done-bg: oklch(25% 0.04 155);
+    --upcoming: var(--text-secondary); --upcoming-bg: oklch(26% 0.02 260);
+    --side-bg: var(--surface); --side-text: var(--text-secondary); --side-active-bg: var(--brand);
+    --shadow: 0 1px 2px oklch(0% 0 0 / .3), 0 8px 24px oklch(0% 0 0 / .4);
+    --shadow-card: 0 10px 26px oklch(0% 0 0 / .45);
+  }
+}
+
+* { box-sizing: border-box; }
+html, body { margin: 0; padding: 0; }
+body { font-family: var(--font-body); color: var(--text-primary); background: var(--paper); -webkit-font-smoothing: antialiased; line-height: 1.6; letter-spacing: .01em; min-height: 100vh; }
+::selection { background: var(--brand-100); color: var(--brand-strong); }
+.skip-link { position: absolute; left: -999px; top: 0; z-index: 100; background: var(--ink); color: var(--on-ink); padding: 10px 16px; border-radius: 0 0 8px 0; }
+.skip-link:focus { left: 0; }
+
+.ic { display: inline-block; width: 19px; height: 19px; background-color: currentColor;
+  -webkit-mask-repeat: no-repeat; mask-repeat: no-repeat; -webkit-mask-position: center; mask-position: center; -webkit-mask-size: contain; mask-size: contain; }
+
+/* ===== App shell ===== */
+.app { display: grid; grid-template-columns: var(--side-w) 1fr; min-height: 100vh; }
+
+/* ===== Sidebar ===== */
+.sidebar { background: var(--side-bg); border-right: 1px solid var(--border); display: flex; flex-direction: column; position: sticky; top: 0; height: 100vh; z-index: 40; }
+.side-brand { padding: 20px 22px 16px; }
+.brand-logo { display: block; width: 100%; height: auto; }
+/* โลโก้เป็นภาพตัวอักษรสีเข้ม จึงต้องมีแผ่นรองสีขาวเมื่ออยู่บนพื้นหลังโหมดมืด */
+:root[data-theme="dark"] .brand-logo { background: #fff; border-radius: var(--radius-md); padding: 10px 12px; }
+@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) .brand-logo { background: #fff; border-radius: var(--radius-md); padding: 10px 12px; } }
+.side-nav { display: flex; flex-direction: column; gap: 3px; padding: 10px 14px; flex: 1; overflow-y: auto; }
+.nav-item { display: flex; align-items: center; gap: 12px; padding: 11px 14px; border-radius: var(--radius-md); color: var(--side-text); text-decoration: none; font-size: 13.5px; transition: background .15s, color .15s; }
+.nav-item .ic { width: 18px; height: 18px; opacity: .8; }
+.nav-item:hover { background: var(--surface-soft); color: var(--text-primary); }
+.nav-item.active { background: var(--side-active-bg); color: var(--on-ink); box-shadow: var(--shadow-card); }
+.nav-item.active .ic { opacity: 1; }
+.nav-item:focus-visible { outline: 2px solid var(--brand); outline-offset: -2px; }
+
+.scrim { position: fixed; inset: 0; background: oklch(24% 0.03 260 / .45); z-index: 39; border: 0; }
+
+/* ===== Content / Topbar ===== */
+.content { display: flex; flex-direction: column; min-width: 0; }
+.topbar { position: sticky; top: 0; z-index: 30; display: flex; align-items: center; gap: 14px;
+  padding: 16px 26px; background: color-mix(in oklch, var(--paper) 85%, transparent); backdrop-filter: blur(14px); border-bottom: 1px solid var(--border); }
+.menu-btn { display: none; }
+.top-spacer { flex: 1; }
+.top-actions { display: flex; align-items: center; gap: 12px; }
+.sync { display: flex; align-items: center; gap: 8px; font-size: 12.5px; color: var(--text-secondary); white-space: nowrap; }
+.sync b { font-weight: 400; font-variant-numeric: tabular-nums; }
+.sync-dot { width: 7px; height: 7px; border-radius: 50%; background: var(--done); flex: none; animation: pulse 2.2s ease-in-out infinite; }
+.icon-btn { width: 38px; height: 38px; flex: none; border-radius: 11px; cursor: pointer; background: var(--surface); border: 1px solid var(--border); color: var(--text-secondary); display: flex; align-items: center; justify-content: center; transition: border-color .15s, color .15s; position: relative; }
+.icon-btn:hover { border-color: var(--border-strong); color: var(--text-primary); }
+.icon-btn:focus-visible { outline: 2px solid var(--brand); outline-offset: 2px; }
+.bell-btn .badge { position: absolute; top: -4px; right: -4px; min-width: 17px; height: 17px; padding: 0 4px; border-radius: 999px; background: var(--live); color: var(--on-ink); font-size: 10px; display: flex; align-items: center; justify-content: center; font-family: var(--font-mono); }
+
+.school-chip { display: flex; align-items: center; gap: 9px; padding: 6px 14px 6px 6px; border-radius: 999px; background: var(--surface); border: 1px solid var(--border); }
+.school-chip-mark { width: 30px; height: 30px; border-radius: 50%; background: var(--brand); color: var(--on-ink); display: flex; align-items: center; justify-content: center; font-size: 13px; flex: none; }
+.school-chip-text { display: flex; flex-direction: column; line-height: 1.3; }
+.school-chip-text b { font-size: 12.5px; font-weight: 400; }
+.school-chip-text small { font-size: 10.5px; color: var(--text-muted); }
+
+.ic-moon { display: none; }
+:root[data-theme="dark"] .ic-sun { display: none; } :root[data-theme="dark"] .ic-moon { display: block; }
+:root[data-theme="light"] .ic-sun { display: block; } :root[data-theme="light"] .ic-moon { display: none; }
+@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) .ic-sun { display: none; } :root:not([data-theme="light"]) .ic-moon { display: block; } }
+
+@keyframes pulse { 0%,100% { opacity: 1; box-shadow: 0 0 0 0 oklch(62% 0.13 155 / .3); } 50% { opacity: .6; box-shadow: 0 0 0 5px oklch(62% 0.13 155 / 0); } }
+@keyframes blink { 0%,100% { opacity: 1; } 50% { opacity: .3; } }
+@media (prefers-reduced-motion: reduce) { .sync-dot, .live-dot { animation: none; } }
+
+/* ===== Main / Pages ===== */
+.main { max-width: 1180px; margin: 0 auto; width: 100%; padding: 32px 32px 56px; display: flex; flex-direction: column; gap: 28px; }
+/* ใช้กับ .school-page เท่านั้นตอนนี้ (หน้าอื่นแยกเป็นไฟล์ HTML ของตัวเองแล้ว ไม่ต้องซ่อน/โชว์ด้วย CSS) */
+.page { display: flex; flex-direction: column; gap: 26px; }
+.page-head h1 { font-family: var(--font-display); font-size: 25px; font-weight: 400; margin: 0; color: var(--brand-strong); }
+.page-head p { font-size: 13.5px; color: var(--text-secondary); margin: 6px 0 0; }
+.page-controls { display: flex; align-items: center; justify-content: space-between; gap: 14px; flex-wrap: wrap; }
+.page-controls .daybar { margin: 0; }
+
+.row { display: grid; gap: 18px; }
+.kpi-cards { grid-template-columns: repeat(2, minmax(0, 340px)); }
+.row-mid { grid-template-columns: 1fr 1.5fr; align-items: start; }
+/* สองพาเนลสูงเท่ากันเสมอ: วันที่ประกาศผลไปไม่กี่รายการ จะได้ไม่เหลือช่องโหว่ข้างตารางอันดับ */
+.row-bottom { grid-template-columns: minmax(0, 1.25fr) minmax(0, 1fr); align-items: stretch; }
+
+.panel { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius-lg); padding: 22px 24px; box-shadow: var(--shadow); }
+.panel-head { display: flex; align-items: flex-start; justify-content: space-between; gap: 12px; margin-bottom: 16px; }
+.panel-title { font-family: var(--font-display); font-size: 16px; font-weight: 400; margin: 0; text-wrap: balance; }
+.panel-note { font-size: 12px; color: var(--text-muted); margin: 3px 0 0; }
+.btn-ghost { font-family: var(--font-body); font-size: 12.5px; color: var(--brand); background: var(--brand-100); border: none; border-radius: 999px; padding: 7px 14px; cursor: pointer; text-decoration: none; white-space: nowrap; }
+.btn-ghost:hover { background: var(--brand); color: var(--on-ink); }
+
+/* ===== KPI cards ===== — ตัวเลขนิ่ง ไม่ใช่สถานะสด จึงไม่มีสีตกแต่งต่อการ์ด (ตาม PRODUCT.md) */
+.kpi-card { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius-lg); padding: 20px 22px; box-shadow: var(--shadow); display: flex; gap: 16px; align-items: flex-start; }
+.kpi-icon { width: 44px; height: 44px; border-radius: 13px; display: flex; align-items: center; justify-content: center; flex: none; background: var(--surface-soft); color: var(--text-secondary); }
+.kpi-icon .ic { width: 21px; height: 21px; }
+.kpi-body { min-width: 0; }
+.kpi-label { font-size: 13px; color: var(--text-secondary); margin: 0; }
+.kpi-value { font-family: var(--font-mono); font-size: 30px; margin: 5px 0 0; font-variant-numeric: tabular-nums; color: var(--text-primary); }
+.kpi-value small { font-family: var(--font-body); font-size: 13px; color: var(--text-muted); }
+.kpi-foot { font-size: 12.5px; color: var(--text-muted); margin: 7px 0 0; }
+.kpi-foot.medal-mini { display: flex; gap: 12px; }
+.mm { display: inline-flex; align-items: center; gap: 3px; font-family: var(--font-mono); font-size: 13px; }
+
+/* ===== Donut ===== */
+.donut-wrap { display: flex; align-items: center; justify-content: center; padding: 6px 0 2px; position: relative; }
+.donut-wrap svg { width: 168px; height: 168px; }
+.donut-center { position: absolute; text-align: center; }
+.donut-center .num { font-family: var(--font-mono); font-size: 25px; line-height: 1; }
+.donut-center .cap { font-size: 11.5px; color: var(--text-muted); margin-top: 3px; }
+.donut-legend { display: flex; flex-direction: column; gap: 9px; margin-top: 14px; }
+.donut-legend .drow { display: flex; align-items: center; gap: 9px; font-size: 13px; }
+.donut-legend .drow .name { color: var(--text-secondary); }
+.donut-legend .drow .v { margin-left: auto; font-family: var(--font-mono); font-variant-numeric: tabular-nums; }
+.dot { width: 9px; height: 9px; border-radius: 50%; display: inline-block; flex: none; }
+.dot.gold { background: var(--medal-gold); } .dot.silver { background: var(--medal-silver); } .dot.bronze { background: var(--medal-bronze); }
+
+/* =========================================================
+   หน้าหลัก — เรียงเป็นแถบเต็มความกว้างจากบนลงล่าง ไม่ใช้กริดหลายคอลัมน์ตายตัว
+   เพราะปริมาณข้อมูลแต่ละวันไม่เท่ากัน (บางวันไม่มีภาพ บางวันแข่งรายการเดียว)
+   ส่วนไหนไม่มีข้อมูลให้ "ไม่แสดง" ไม่ใช่ปล่อยกล่องว่างค้างไว้
+   ========================================================= */
+
+/* ---- ภาพบรรยากาศ: แถบเต็มความกว้าง ซ่อนทั้งแถบเมื่อชีตยังไม่มีภาพ ---- */
+.hero { position: relative; display: flex; border-radius: var(--radius-lg); overflow: hidden; border: 1px solid var(--border);
+  background: var(--surface-soft); box-shadow: var(--shadow); }
+.hero[hidden] { display: none; }
+/* ภาพเป็นตัวเปิดหน้าแล้ว จึงให้สูงตามจอ แต่คุมเพดานไว้ไม่ให้แถวล่างหลุดพ้นหน้าจอไปหมด */
+.hero-stage { position: relative; flex: 1; height: clamp(340px, 58vh, 620px); }
+.hero-slide { position: absolute; inset: 0; margin: 0; opacity: 0; pointer-events: none; transition: opacity .45s ease; }
+.hero-slide.is-on { opacity: 1; pointer-events: auto; }
+/* ลดการเคลื่อนไหว = ตัดภาพทันที ไม่เฟด แต่ยังเลื่อนภาพต่อ (ดู heroAutoplay ใน home.js) */
+@media (prefers-reduced-motion: reduce) { .hero-slide { transition: none; } }
+.hero-img { width: 100%; height: 100%; object-fit: cover; display: block; background: var(--surface-soft); }
+.hero-poster { position: absolute; inset: 0; display: flex; align-items: center; justify-content: center;
+  background: var(--ink); color: var(--on-ink-soft); }
+.hero-poster .sport-ic { width: 30%; height: 30%; opacity: .9; }
+/* ภาพที่ไม่มีคำบรรยายจะไม่มีแถบไล่สีของ .hero-cap รองอยู่ ต้องปูเงาบาง ๆ ให้จุดเลื่อนภาพยังมองเห็น */
+.hero-slide.is-plain::after { content: ''; position: absolute; left: 0; right: 0; bottom: 0; height: 84px;
+  background: linear-gradient(to top, oklch(16% 0.02 260 / .55), oklch(16% 0.02 260 / 0)); pointer-events: none; }
+
+.hero-cap { position: absolute; left: 0; right: 0; bottom: 0; padding: 46px 22px 20px;
+  background: linear-gradient(to top, oklch(16% 0.02 260 / .94), oklch(16% 0.02 260 / .72) 42%, oklch(16% 0.02 260 / 0)); }
+.hero-tags { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; margin-bottom: 9px; }
+.hero-tag { font-size: 11.5px; color: oklch(100% 0 0); background: oklch(100% 0 0 / .18); border-radius: 999px; padding: 4px 11px; }
+.hero-title { font-family: var(--font-display); font-size: 21px; line-height: 1.35; color: oklch(100% 0 0);
+  margin: 0; text-wrap: balance; max-width: 34ch; }
+.hero-meta { font-size: 12.5px; color: oklch(100% 0 0 / .82); margin: 6px 0 0; }
+
+/* จุดบอกตำแหน่งย้ายมากลางล่าง แทนที่ปุ่มลูกศรที่เอาออกแล้ว */
+/* ---- ตัวบอกตำแหน่ง: ขนาดคงที่ไม่ว่าจะ 2 รูปหรือ 30 รูป ---- */
+.hero-count { position: absolute; right: 14px; bottom: 14px; margin: 0; padding: 5px 12px; border-radius: 999px;
+  font-family: var(--font-mono); font-size: 12.5px; font-variant-numeric: tabular-nums; letter-spacing: .04em;
+  color: oklch(100% 0 0); background: oklch(16% 0.02 260 / .55); backdrop-filter: blur(6px); }
+.hero-count[hidden] { display: none; }
+
+/* เส้นคืบหน้าแนบขอบล่างสุด บอกว่าอีกนานแค่ไหนจะเปลี่ยนรูป */
+.hero-progress { position: absolute; left: 0; right: 0; bottom: 0; height: 3px; background: oklch(100% 0 0 / .22); }
+.hero-progress[hidden] { display: none; }
+.hero-bar { display: block; height: 100%; background: oklch(100% 0 0 / .9);
+  transform: scaleX(0); transform-origin: left center; }
+@keyframes heroFill { from { transform: scaleX(0); } to { transform: scaleX(1); } }
+
+/* ===== หัวข้อกลุ่มเนื้อหา ===== */
+.sec { display: flex; flex-direction: column; gap: 14px; }
+.sec-head { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
+.sec-title { font-family: var(--font-display); font-size: 18px; font-weight: 400; margin: 0; }
+.sec-spacer { flex: 1; }
+.live-flag { display: inline-flex; align-items: center; gap: 6px; font-size: 11.5px; color: var(--live);
+  background: var(--live-bg); border-radius: 999px; padding: 4px 11px; }
+.live-flag[hidden] { display: none; }
+
+/* ===== การ์ดแมตช์ ===== */
+/* จำนวนคอลัมน์ผูกกับจำนวนการ์ด (คลาส n1–n6) ไม่ใช้ auto-fit
+   เพราะ auto-fit ปล่อยให้แถวสุดท้ายเหลือช่องว่างเมื่อจำนวนการ์ดหารไม่ลงตัว
+   ใบสุดท้ายของแถวที่ไม่เต็มจะยืดกินคอลัมน์ที่เหลือแทน */
+.live-grid { display: grid; grid-template-columns: 1fr; gap: 16px; }
+@media (min-width: 700px) {
+  .live-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .live-grid.n1 { grid-template-columns: 1fr; }
+  .live-grid.n3 > :last-child, .live-grid.n5 > :last-child { grid-column: 1 / -1; }
+}
+/* 3 รายการต้องอยู่แถวเดียวกัน จึงเปิด 3 คอลัมน์ให้ n3 เร็วกว่าชุดอื่น
+   (แคบกว่านี้การ์ดจะเหลือกว้างไม่ถึง 170px ตราโรงเรียนสองข้างกับสกอร์จะเบียดกัน) */
+@media (min-width: 1000px) {
+  .live-grid.n3 { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+  .live-grid.n3 > :last-child { grid-column: auto; }
+}
+@media (min-width: 1080px) {
+  .live-grid.n5, .live-grid.n6 { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+  .live-grid.n5 > :last-child { grid-column: span 2; }
+}
+/* การ์ดอยู่ในแผงสีขาวแล้ว จึงใช้พื้นอ่อนแทนเงา ให้เป็นภาษาเดียวกับตารางเหรียญ */
+.lm-card { background: var(--surface-soft); border: 1px solid var(--border); border-radius: var(--radius-lg);
+  padding: 15px 18px 14px; display: flex; flex-direction: column; gap: 12px; }
+/* การ์ดสด: ยกขึ้นเป็นพื้นขาวและตีกรอบสีสด ให้สะดุดตากว่าการ์ดที่ประกาศผลแล้ว */
+.lm-card.is-live { background: var(--surface); border-color: var(--live); }
+/* หัวการ์ด: ชนิดกีฬาเป็นบรรทัดนำ ประเภทของกีฬาเป็นบรรทัดรอง */
+/* min-height ตรึงความสูงหัวการ์ดให้เท่ากันทุกใบ ใบที่ยังไม่มีมาสคอตจะได้ไม่ลอยสูงกว่าเพื่อน */
+.lm-top { display: flex; align-items: flex-start; gap: 10px; min-height: 46px; }
+.lm-ic { width: 38px; height: 38px; border-radius: 12px; flex: none; overflow: hidden; display: flex; align-items: center; justify-content: center;
+  background: var(--brand-100); color: var(--brand-strong); }
+.lm-card.is-live .lm-ic { background: var(--live-bg); color: var(--live); }
+.lm-ic .sport-ic { width: 22px; height: 22px; }
+/* มาสคอตแสดงเต็มตัว ไม่ครอป — ยืนพิงบรรทัดชื่อกีฬา ไม่มีกล่องครอบเพื่อให้ได้ขนาดใหญ่สุด
+   ในพื้นที่หัวการ์ด แต่ยังเล็กกว่าสกอร์ที่เป็นจุดโฟกัสของการ์ด */
+.lm-art { flex: none; width: 38px; align-self: stretch; min-height: 46px; display: flex; align-items: flex-end; justify-content: center; }
+.lm-mascot { width: 100%; max-height: 50px; object-fit: contain; object-position: bottom; }
+.lm-head { display: flex; flex-direction: column; gap: 2px; min-width: 0; flex: 1; }
+.lm-sport { font-family: var(--font-display); font-size: 15.5px; line-height: 1.3; color: var(--text-primary); }
+.lm-kind { font-size: 12.5px; line-height: 1.4; color: var(--text-muted); }
+.lm-flag { flex: none; margin-top: 3px; }
+.lm-body { display: grid; grid-template-columns: 1fr auto 1fr; align-items: center; gap: 10px; padding: 2px 0; }
+.lm-body.single { grid-template-columns: 1fr auto; }
+.lm-body.single .lm-team { flex-direction: row; text-align: left; }
+.lm-team { display: flex; flex-direction: column; align-items: center; gap: 8px; min-width: 0; text-align: center; }
+.crest { width: 44px; height: 44px; border-radius: 50%; flex: none; display: flex; align-items: center; justify-content: center;
+  background: var(--surface); border: 1px solid var(--border); color: var(--text-secondary); font-size: 18px; }
+/* โลโก้จริงเป็นตราพื้นโปร่ง — ใส่พื้นขาวไว้เสมอเพื่อให้อ่านออกทั้งธีมสว่างและมืด */
+img.crest { object-fit: contain; background: #fff; border-color: var(--border); padding: 3px; }
+.lm-team.is-self span.crest { background: var(--brand-100); border-color: transparent; color: var(--brand-strong); }
+.lm-team .tname { font-size: 13px; color: var(--text-secondary); line-height: 1.35; }
+.lm-team.is-self .tname { color: var(--text-primary); }
+.lm-score { display: flex; align-items: baseline; gap: 7px; font-family: var(--font-mono); font-size: 29px; font-variant-numeric: tabular-nums; }
+/* ผลที่ประกาศแล้ว: ฝ่ายชนะเป็นสีเน้น ฝ่ายแพ้จาง เหมือนตัวเลขในตารางเหรียญที่สีบอกความหมาย */
+.lm-score .s.win { color: var(--brand-strong); }
+.lm-score .s.lose { color: var(--text-muted); }
+.lm-card.is-live .lm-score .s { color: var(--live); }
+.lm-score .sep { font-size: 19px; color: var(--text-muted); }
+.lm-score .s-wait { font-family: var(--font-body); font-size: 14px; color: var(--text-secondary); }
+.lm-foot { font-size: 12.5px; color: var(--text-muted);
+  margin: 0; padding-top: 11px; border-top: 1px solid var(--border); }
+
+/* การ์ดที่กินความกว้างทั้งแถว (วันที่มีรายการเดียว หรือใบสุดท้ายของแถวที่ไม่เต็ม)
+   เปลี่ยนเป็นแนวนอน แทนการยืดการ์ดแนวตั้งให้กว้างจนเนื้อหาลอย */
+@media (min-width: 700px) {
+  .lm-card.wide,
+  .live-grid.n3 > :last-child, .live-grid.n5 > :last-child {
+    display: grid; grid-template-columns: minmax(0, 1fr) minmax(300px, 42%);
+    grid-template-areas: "top board" "foot board"; column-gap: 34px; row-gap: 8px;
+    align-content: center; align-items: center; padding: 22px 26px; }
+  .lm-card.wide .lm-top,
+  .live-grid.n3 > :last-child .lm-top, .live-grid.n5 > :last-child .lm-top { grid-area: top; gap: 13px; }
+  .lm-card.wide .lm-ic,
+  .live-grid.n3 > :last-child .lm-ic, .live-grid.n5 > :last-child .lm-ic { width: 46px; height: 46px; border-radius: 14px; }
+  .lm-card.wide .lm-ic .sport-ic,
+  .live-grid.n3 > :last-child .lm-ic .sport-ic, .live-grid.n5 > :last-child .lm-ic .sport-ic { width: 25px; height: 25px; }
+  .lm-card.wide .lm-art,
+  .live-grid.n3 > :last-child .lm-art, .live-grid.n5 > :last-child .lm-art { width: 46px; min-height: 56px; }
+  .lm-card.wide .lm-mascot,
+  .live-grid.n3 > :last-child .lm-mascot, .live-grid.n5 > :last-child .lm-mascot { max-height: 60px; }
+  .lm-card.wide .lm-sport,
+  .live-grid.n3 > :last-child .lm-sport, .live-grid.n5 > :last-child .lm-sport { font-size: 19px; }
+  .lm-card.wide .lm-kind,
+  .live-grid.n3 > :last-child .lm-kind, .live-grid.n5 > :last-child .lm-kind { font-size: 13.5px; }
+  .lm-card.wide .lm-body,
+  .live-grid.n3 > :last-child .lm-body, .live-grid.n5 > :last-child .lm-body { grid-area: board; padding: 4px 0 4px 30px; border-left: 1px solid var(--border); }
+  .lm-card.wide .lm-foot,
+  .live-grid.n3 > :last-child .lm-foot, .live-grid.n5 > :last-child .lm-foot { grid-area: foot; border-top: none; padding-top: 2px; }
+  .lm-card.wide .lm-score,
+  .live-grid.n3 > :last-child .lm-score, .live-grid.n5 > :last-child .lm-score { font-size: 38px; }
+  .lm-card.wide .crest,
+  .live-grid.n3 > :last-child .crest, .live-grid.n5 > :last-child .crest { width: 52px; height: 52px; font-size: 21px; }
+}
+/* 3 คอลัมน์แล้วใบสุดท้ายไม่ได้กินทั้งแถว จึงกลับไปเป็นการ์ดแนวตั้งเหมือนใบอื่น */
+@media (min-width: 1000px) {
+  .live-grid.n3 > :last-child { display: flex; flex-direction: column; align-items: stretch; gap: 12px; padding: 15px 18px 14px; }
+  .live-grid.n3 > :last-child .lm-top { gap: 11px; }
+  .live-grid.n3 > :last-child .lm-ic { width: 38px; height: 38px; border-radius: 12px; }
+  .live-grid.n3 > :last-child .lm-ic .sport-ic { width: 22px; height: 22px; }
+  .live-grid.n3 > :last-child .lm-art { width: 38px; min-height: 46px; }
+  .live-grid.n3 > :last-child .lm-mascot { max-height: 50px; }
+  .live-grid.n3 > :last-child .lm-sport { font-size: 15.5px; }
+  .live-grid.n3 > :last-child .lm-kind { font-size: 12.5px; }
+  .live-grid.n3 > :last-child .lm-body { padding: 2px 0; border-left: none; }
+  .live-grid.n3 > :last-child .lm-foot { border-top: 1px solid var(--border); padding-top: 11px; }
+  .live-grid.n3 > :last-child .lm-score { font-size: 29px; }
+  .live-grid.n3 > :last-child .crest { width: 44px; height: 44px; font-size: 18px; }
+}
+
+/* ช่องว่างเมื่อโรงเรียนเราหลุดจาก 8 อันดับแรกแต่ยังถูกตรึงไว้ท้ายรายการ */
+.mr-gap { text-align: center; color: var(--text-muted); font-size: 13px; letter-spacing: .35em; padding: 6px 0 2px; }
+
+/* ===== Day tabs ===== */
+.daybar { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
+.daytab { font-family: var(--font-body); font-size: 13px; color: var(--text-secondary); background: var(--surface-soft); border: 1px solid var(--border); border-radius: 999px; padding: 9px 16px; cursor: pointer; display: flex; align-items: center; gap: 9px; transition: border-color .15s, color .15s, background .15s; }
+.daytab:hover { border-color: var(--border-strong); color: var(--text-primary); }
+.daytab:focus-visible { outline: 2px solid var(--brand); outline-offset: 2px; }
+.daytab .n { font-family: var(--font-mono); font-size: 11px; color: var(--text-muted); letter-spacing: .06em; }
+.daytab.active { background: var(--brand); border-color: transparent; color: var(--on-ink); }
+.daytab.active .n { color: var(--on-ink-soft); }
+
+/* ===== Timeline / ประกาศผลล่าสุด ===== */
+.timeline { display: flex; flex-direction: column; }
+.trow { display: grid; grid-template-columns: auto 1fr auto; align-items: center; gap: 13px; padding: 12px 0; border-top: 1px solid var(--border); }
+.trow:first-child { border-top: none; }
+.tdot { width: 36px; height: 36px; border-radius: 11px; display: flex; align-items: center; justify-content: center; flex: none; }
+.tdot .sport-ic { width: 22px; height: 22px; }
+.tdot.live { background: var(--live-bg); color: var(--live); }
+/* ผลที่ประกาศแล้วใช้สีเน้นเดียวกับไอคอนบนการ์ดแมตช์ เหลือสีสถานะไว้ให้ "สด" ใบเดียว */
+.tdot.done { background: var(--brand-100); color: var(--brand-strong); }
+.tdot.upcoming { background: var(--upcoming-bg); color: var(--upcoming); }
+.tinfo .ev { font-size: 15px; margin: 0 0 3px; }
+.tinfo .ev .kind { font-size: 13px; color: var(--text-muted); }
+.tinfo .meta { font-size: 13px; color: var(--text-secondary); margin: 0; }
+.trow .tscore { font-family: var(--font-mono); font-size: 17px; color: var(--brand-strong); font-variant-numeric: tabular-nums; white-space: nowrap; }
+.trow .ttime { font-family: var(--font-mono); font-size: 12px; color: var(--text-muted); white-space: nowrap; }
+
+/* ===== Sport icon (mask) ===== */
+/* ไอคอนกีฬาเป็นภาพสีในตัวเอง (ดู sportIcon() ใน common.js) ไม่ได้ย้อมด้วย currentColor
+   เหมือนไอคอน UI (.ic) — สีของมันคือสีอุปกรณ์จริง ไม่ใช่สีของ theme */
+.sport-ic { display: inline-block; flex: none; object-fit: contain; }
+
+/* ===== Chips ===== */
+.chip { display: inline-flex; align-items: center; gap: 6px; font-size: 11.5px; padding: 4px 11px; border-radius: 999px; white-space: nowrap; }
+.chip.live { background: var(--live-bg); color: var(--live); }
+.chip.done { background: var(--done-bg); color: var(--done); }
+.chip.upcoming { background: var(--upcoming-bg); color: var(--upcoming); }
+.live-dot { width: 6px; height: 6px; border-radius: 50%; background: currentColor; animation: blink 1.5s ease-in-out infinite; }
+
+/* ===== ตารางแข่งขัน: fixture list ===== */
+.table-search { position: relative; display: flex; align-items: center; }
+.table-search .ic { position: absolute; left: 11px; width: 15px; height: 15px; color: var(--text-muted); pointer-events: none; }
+.table-search input { font-family: var(--font-body); font-size: 13px; color: var(--text-primary); background: var(--surface-soft); border: 1px solid var(--border); border-radius: 999px; padding: 8px 14px 8px 32px; width: 200px; }
+.table-search input:focus-visible { outline: 2px solid var(--brand); outline-offset: 1px; border-color: transparent; }
+.fixture-list { display: flex; flex-direction: column; }
+.fixture-card { display: grid; grid-template-columns: auto 1fr auto; align-items: center; gap: 15px; padding: 17px 4px; border-top: 1px solid var(--border); }
+.fixture-list .fixture-card:first-child { border-top: none; }
+.fixture-card.self { background: var(--brand-100); margin: 0 -12px; padding-left: 12px; padding-right: 12px; border-radius: 10px; border-top-color: transparent; }
+.fx-ic { width: 36px; height: 36px; border-radius: 11px; background: var(--surface-soft); border: 1px solid var(--border); display: flex; align-items: center; justify-content: center; flex: none; color: var(--text-secondary); }
+.fx-ic .sport-ic { width: 21px; height: 21px; }
+.fx-event { font-size: 15px; margin: 0 0 3px; }
+.fx-teams { font-size: 13px; color: var(--text-secondary); margin: 0; }
+.fx-side { text-align: right; display: flex; flex-direction: column; align-items: flex-end; gap: 6px; }
+.fx-time { font-family: var(--font-mono); font-size: 12px; color: var(--text-muted); white-space: nowrap; }
+.table-empty { text-align: center; color: var(--text-muted); font-size: 13px; padding: 26px; }
+.table-foot { display: flex; align-items: center; justify-content: space-between; gap: 12px; margin-top: 14px; font-size: 12px; color: var(--text-muted); }
+.pager { display: flex; gap: 6px; }
+.pager button { min-width: 30px; height: 30px; border-radius: 8px; border: 1px solid var(--border); background: var(--surface); color: var(--text-secondary); font-family: var(--font-mono); font-size: 12.5px; cursor: pointer; }
+.pager button:hover { border-color: var(--border-strong); color: var(--text-primary); }
+.pager button.active { background: var(--brand); border-color: transparent; color: var(--on-ink); }
+.pager button:disabled { opacity: .45; cursor: default; }
+.pager button:focus-visible { outline: 2px solid var(--brand); outline-offset: 1px; }
+
+/* =========================================================
+   แถบอันดับของโรงเรียนเรา (หน้าหลัก)
+   ทั้งแถบตอบคำถามเดียวของหน้า "ตอนนี้เราอยู่อันดับไหน" ตัวเลขอันดับจึงเป็นของชิ้นใหญ่สุด
+   เหรียญกับส่วนต่างเป็นรายละเอียดรอง — ตารางอันดับเต็มอยู่หน้าอันดับเหรียญรางวัล
+   ========================================================= */
+.rankbar { display: flex; align-items: center; gap: 14px 26px; flex-wrap: wrap;
+  background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius-lg);
+  box-shadow: var(--shadow); padding: 18px 24px; }
+.rankbar[hidden] { display: none; }
+.rb-id { display: flex; align-items: center; gap: 14px; min-width: 0; flex: 1 1 300px; }
+.rb-id .crest { width: 52px; height: 52px; }
+.rb-text { min-width: 0; }
+.rb-name { font-family: var(--font-display); font-size: 16px; margin: 0; line-height: 1.35; }
+.rb-gap { font-size: 12.5px; color: var(--text-muted); margin: 3px 0 0; line-height: 1.5; }
+
+.rb-medals { display: flex; align-items: center; gap: 18px; flex-wrap: wrap; }
+.rb-medal { display: inline-flex; align-items: center; gap: 5px; font-size: 12.5px; color: var(--text-secondary); }
+.rb-medal b { font-family: var(--font-mono); font-size: 20px; font-weight: 400; color: var(--text-primary);
+  font-variant-numeric: tabular-nums; }
+/* "รวม" ไม่ใช่ชนิดเหรียญ จึงไม่มีไอคอนเหรียญ — เป็นผลบวก ไม่ใช่ของอีกอย่างหนึ่ง */
+.rb-medal.is-total { padding-left: 18px; border-left: 1px solid var(--border); }
+
+/* อันดับมาก่อนทุกอย่างในแถบ และเป็นของชิ้นเดียวที่ใช้สีเน้น — เส้นคั่นกันไม่ให้อ่านติดกับชื่อโรงเรียน */
+.rb-rank { display: flex; align-items: baseline; gap: 9px; margin: 0; padding-right: 24px;
+  border-right: 1px solid var(--border); flex: none; }
+.rb-rank .cap { font-size: 12.5px; color: var(--text-secondary); letter-spacing: .06em; }
+.rb-rank .num { font-family: var(--font-mono); font-size: 54px; font-weight: 400; line-height: .9;
+  color: var(--brand-strong); font-variant-numeric: tabular-nums; }
+.rb-rank .of { font-size: 12px; color: var(--text-muted); line-height: 1.3; }
+.rb-link { flex: none; margin-left: auto; }
+
+/* จอแคบ: อันดับกับชื่อโรงเรียนอยู่บรรทัดเดียวกัน เหรียญลงบรรทัดล่างเต็มความกว้าง */
+@media (max-width: 860px) {
+  .rankbar { padding: 16px 18px; gap: 14px 18px; }
+  .rb-rank { padding-right: 18px; }
+  .rb-rank .num { font-size: 42px; }
+  .rb-id { flex: 1 1 200px; }
+  .rb-medals { flex: 1 1 100%; gap: 16px; padding-top: 13px; border-top: 1px solid var(--border); }
+  .rb-medal b { font-size: 18px; }
+  .rb-medal.is-total { padding-left: 14px; }
+  .rb-link { margin-left: auto; }
+}
+@media (max-width: 560px) {
+  .rb-rank { flex: 1 1 100%; padding: 0 0 12px; border-right: none; border-bottom: 1px solid var(--border); }
+  .rb-id .crest { width: 44px; height: 44px; }
+  .rb-link { flex: 1 1 100%; justify-content: center; }
+}
+
+/* =========================================================
+   พาเนลกระดานผล + ตารางอันดับเหรียญ (ใช้ร่วมหน้าหลัก/หน้าอันดับเหรียญ)
+   หัวพาเนลเป็นชื่อกับเส้นคั่น ไม่ใช่แถบไล่เฉด — ทั้งหน้านี้สงวนสีไว้ให้สิ่งที่
+   "กำลังเกิดขึ้นตอนนี้" (ป้ายสด สกอร์สด) กับสีเหรียญที่มีความหมายจริงเท่านั้น
+   ตัวเลขเหรียญใช้เฉดเข้ม (--medal-*-ink) เพราะสีเหรียญสดอ่านเป็นตัวหนังสือกลางแดดไม่ออก
+   ========================================================= */
+.board-panel { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius-lg);
+  box-shadow: var(--shadow); overflow: hidden; display: flex; flex-direction: column; }
+.board-head { display: flex; align-items: center; gap: 12px; padding: 15px 20px 13px;
+  border-bottom: 1px solid var(--border); }
+.board-head h2 { font-family: var(--font-display); font-size: 17px; font-weight: 400; margin: 0; color: var(--text-primary); }
+.board-head .spacer { flex: 1; }
+/* ป้ายบอกจำนวนเป็นข้อความเงียบ ๆ ส่วนลิงก์เป็นปุ่มขอบบางให้กดโดนบนมือถือ */
+.board-pill { font-size: 12.5px; color: var(--text-muted); white-space: nowrap; }
+a.board-pill { display: inline-flex; align-items: center; min-height: 34px; padding: 0 13px;
+  border: 1px solid var(--border); border-radius: 999px; color: var(--text-secondary); text-decoration: none;
+  transition: border-color .15s, color .15s; }
+a.board-pill:hover { border-color: var(--border-strong); color: var(--text-primary); }
+a.board-pill:focus-visible { outline: 2px solid var(--brand); outline-offset: 2px; }
+/* เนื้อในของแผงที่ไม่ใช่ตาราง (การ์ดแมตช์ / ประกาศผล) — ตารางเหรียญเว้นระยะเองในแถว */
+.board-body { padding: 18px 20px 20px; }
+
+/* อันดับเหรียญคู่กับประกาศผลล่าสุด: ตารางกว้างกว่าเพราะมีคอลัมน์ตัวเลข 4 ช่อง
+   สูงเท่ากันเสมอ วันที่ประกาศผลไปไม่กี่รายการจะได้ไม่เหลือช่องโหว่ข้างตาราง
+   วางคู่กันเฉพาะจอ ≥1400px: ตารางเหรียญต้องการอย่างน้อย ~660px ถึงจะพอให้คอลัมน์ชื่อ
+   ได้ ~250px (ชื่อเต็มอยู่ได้ 1–2 บรรทัด) แคบกว่านั้นชื่อจะตกเป็น 4–5 บรรทัดจนแถวสูงผิดปกติ
+   แท็บเล็ตแนวนอนกับโน้ตบุ๊ก 1024–1399 จึงวางซ้อนกัน ได้ความกว้างเต็มทั้งสองแผง */
+.board-row { display: grid; gap: 20px; align-items: stretch; }
+.board-row > .board-panel { min-width: 0; }
+.board-row .board-body { flex: 1; }
+@media (min-width: 1400px) {
+  .board-row { grid-template-columns: minmax(0, 1.7fr) minmax(0, 1fr); }
+}
+
+/* จอแคบ: ชื่อพาเนลอยู่บรรทัดแรก ป้ายกับลิงก์ตกลงบรรทัดที่สอง ไม่บีบชื่อจนตัดคำ */
+@media (max-width: 560px) {
+  .board-head { flex-wrap: wrap; row-gap: 9px; padding: 14px 16px 12px; }
+  .board-head .spacer { flex: 0 0 100%; height: 0; }
+}
+
+.mtable { display: flex; flex-direction: column; }
+/* คอลัมน์ชื่อมีพื้นขั้นต่ำ 7rem: ถ้าปล่อยเป็น minmax(0, 1fr) แล้วแผงแคบกว่าที่คาด
+   คอลัมน์จะยุบจนเหลือความกว้างตัวอักษรเดียว ชื่อไทยจะเรียงลงแนวตั้งอ่านไม่ออก
+   ยอมให้ล้นขอบเล็กน้อยดีกว่าแสดงผลพัง — แต่ปกติไม่ถึงจุดนั้นเพราะ .board-row ซ้อนกันก่อนแล้ว */
+.mt-head, .mt-row { display: grid; grid-template-columns: 34px minmax(7rem, 1fr) repeat(4, minmax(58px, 72px));
+  align-items: center; gap: 12px; padding: 0 20px; }
+.mt-head { padding-top: 11px; padding-bottom: 11px;
+  border-bottom: 1px solid var(--border); font-size: 12px; color: var(--text-muted); }
+.mt-head span { display: flex; align-items: center; }
+/* หัวคอลัมน์ตัวเลขชิดขวาเหมือนตัวเลขที่อยู่ใต้มัน ไอคอนเหรียญนำหน้าข้อความกำกับ */
+.mt-head .num-col { justify-content: flex-end; gap: 5px; white-space: nowrap; }
+
+.mt-row { padding-top: 11px; padding-bottom: 11px; border-bottom: 1px solid var(--border);
+  text-decoration: none; color: var(--text-primary); font-size: 15px; transition: background .15s; }
+.mt-row:last-child { border-bottom: none; }
+.mt-row:hover { background: var(--surface-soft); }
+.mt-row:focus-visible { outline: 2px solid var(--brand); outline-offset: -2px; }
+.mt-row.self { background: var(--brand-100); }
+
+/* =========================================================
+   ไอคอนเหรียญ (.mt-mic) — เหรียญกลมมีดาวเจาะกลาง เป็นรูปทรง mask ไม่ใช่อิโมจิ
+   จึงคุมสีได้จากตัวแปรสีเหรียญ และหน้าตาเหมือนกันทุกแพลตฟอร์ม
+   ใช้ "คู่กับข้อความกำกับเสมอ" (ทอง/เงิน/ทองแดง) ตามข้อห้ามสื่อความหมายด้วยสีอย่างเดียว
+   ========================================================= */
+.mt-mic { width: 14px; height: 14px; flex: none; display: inline-block;
+  -webkit-mask: var(--mic-medal) center / contain no-repeat;
+          mask: var(--mic-medal) center / contain no-repeat; }
+.mt-mic.gold { background: var(--medal-gold); }
+/* เงินใช้เฉดเข้ม (ตัวเดียวกับตัวเลขในคอลัมน์) เพราะสีเงินสดเกือบขาว
+   ไอคอน 14px จะจมหายไปกับพื้นการ์ด — ทองกับทองแดงเข้มพอแล้วจึงใช้สีเหรียญตรง ๆ */
+.mt-mic.silver { background: var(--medal-silver-ink); }
+.mt-mic.bronze { background: var(--medal-bronze); }
+
+/* อันดับ 1–3 เท่านั้นที่ได้ป้ายสีเหรียญ เพราะเป็นความหมายของอันดับนั้นจริง
+   อันดับอื่นเป็นตัวเลขเปล่า ไม่ต้องมีวงกลมเทาให้รก */
+.mt-rank { width: 28px; height: 28px; border-radius: 50%; flex: none;
+  display: flex; align-items: center; justify-content: center;
+  font-family: var(--font-mono); font-size: 15px; color: var(--text-muted); }
+.mt-row.p1 .mt-rank { background: var(--medal-gold); color: oklch(28% 0.06 75); }
+.mt-row.p2 .mt-rank { background: var(--medal-silver); color: oklch(30% 0.01 250); }
+.mt-row.p3 .mt-rank { background: var(--medal-bronze); color: oklch(99% 0.005 60); }
+
+/* ชื่อเต็มตรงตามชีต ยาวได้ถึง ~70 ตัวอักษร จึงต้องยอมให้ตัดขึ้นบรรทัดใหม่
+   ห้ามตัดท้ายด้วย ellipsis เพราะชื่อโรงเรียนต่างกันที่ท้ายชื่อ (ฝ่ายมัธยม / วิทยาเขต…)
+   ใช้ break-word ไม่ใช่ anywhere: เบราว์เซอร์จะตัดตามขอบคำไทยก่อน แล้วค่อยหักกลางคำ
+   เฉพาะคำที่ยาวเกินคอลัมน์จริง ๆ — anywhere หักกลางคำทันทีจนได้ "(ฝ่าย / มัธยม)"
+   คอลัมน์ชื่อเป็น minmax(0, 1fr) อยู่แล้ว จึงยังบีบได้โดยไม่ดันตัวเลขหลุดขอบ */
+.mt-name { min-width: 0; line-height: 1.35; font-size: 15px; overflow-wrap: break-word; }
+.mt-row.p1 .mt-name, .mt-row.self .mt-name { color: var(--text-primary); }
+
+/* ตัวเลขล้วน ชิดขวา ความกว้างตัวเลขคงที่ — อ่านเทียบกันตรง ๆ ได้โดยไม่ต้องมีแถบสัดส่วนช่วย */
+.mt-cell { min-width: 0; text-align: right; }
+.mt-cell b { font-family: var(--font-mono); font-weight: 400; font-size: 16px; font-variant-numeric: tabular-nums; line-height: 1.1; }
+/* จอกว้างมีหัวคอลัมน์บอกชนิดเหรียญอยู่แล้ว ป้ายในช่องจึงโผล่เฉพาะจอแคบที่ไม่มีหัวตาราง */
+.mt-lbl { display: none; }
+/* สีตามชนิดเหรียญของตัวเอง ไอคอนในหัวคอลัมน์ใช้สีเดียวกัน จึงจับคู่คอลัมน์กับชนิดได้ทันที
+   ยอดรวมเป็นสีเน้นและตัวโตสุด เพราะเป็นตัวเลขที่คนมองหาเป็นอันดับแรก */
+.mt-cell.gold b { color: var(--medal-gold-ink); }
+.mt-cell.silver b { color: var(--medal-silver-ink); }
+.mt-cell.bronze b { color: var(--medal-bronze-ink); }
+.mt-cell.total b { color: var(--brand-strong); font-size: 17.5px; }
+
+/* จอใหญ่: คอลัมน์ชื่อเป็น 1fr จึงกินที่ว่างทั้งหมดไว้เอง เหลือช่องโหว่ยาวหลายร้อย px
+   ระหว่างชื่อสั้น ๆ กับตัวเลข ทำให้ต้องกวาดสายตาไกลข้ามแถว — แบ่งที่ว่างส่วนหนึ่ง
+   ให้คอลัมน์ตัวเลขแทน ตัวเลขจะขยับเข้ามาใกล้ชื่อขึ้น (จอเล็กกว่านี้ไม่มีที่ว่างให้แบ่ง) */
+@media (min-width: 1200px) {
+  .mt-head, .mt-row { grid-template-columns: 34px minmax(7rem, 1fr) repeat(4, minmax(58px, 104px)); }
+  /* ยกเว้นตารางย่อในหน้าหลัก: มันอยู่ในแผงแคบครึ่งเดียวของแถว ไม่ได้กว้างตามจอ
+     ถ้าเอาที่ว่างไปให้ตัวเลขด้วย คอลัมน์ชื่อจะเหลือ ~115px จนชื่อตกเป็น 5 บรรทัด
+     (media query วัดความกว้าง "จอ" ไม่ใช่ความกว้าง "แผง" จึงต้องยกเว้นเองตรงนี้) */
+  .board-row .mt-head, .board-row .mt-row {
+    grid-template-columns: 34px minmax(7rem, 1fr) repeat(4, minmax(58px, 72px));
+  }
+}
+
+/* ช่องว่างเมื่อโรงเรียนเราหลุดจาก 8 อันดับแรกแต่ยังถูกตรึงไว้ท้ายตาราง */
+.mt-gap { text-align: center; color: var(--text-muted); font-size: 13px; letter-spacing: .35em;
+  padding: 6px 0; border-bottom: 1px solid var(--border); }
+
+/* จอแคบ: ตัวเลขเหรียญย้ายลงบรรทัดที่สอง ชื่อโรงเรียนกับยอดรวมอยู่บรรทัดแรก */
+@media (max-width: 720px) {
+  .mt-head { display: none; }
+  .mt-row { grid-template-columns: 28px repeat(3, minmax(0, 1fr)) minmax(38px, auto); gap: 8px 6px; padding: 12px 14px; }
+  .mt-rank { grid-row: 1 / span 2; grid-column: 1; }
+  /* ชื่อโรงเรียนภาษาไทยเป็นคำยาวไม่มีช่องว่าง ถ้าไม่ยอมให้ตัดกลางคำ
+     ความกว้างขั้นต่ำของมันจะดันคอลัมน์ "รวม" หลุดขอบการ์ดไปบนจอแคบ */
+  .mt-name { grid-column: 2 / span 3; grid-row: 1; font-size: 14.5px; }
+  .mt-cell.total { grid-column: 5; grid-row: 1 / span 2; }
+  .mt-cell.gold { grid-column: 2; grid-row: 2; }
+  .mt-cell.silver { grid-column: 3; grid-row: 2; }
+  .mt-cell.bronze { grid-column: 4; grid-row: 2; }
+  /* ไม่มีหัวตารางแล้ว ตัวเลขจึงต้องพกไอคอน+ป้ายกำกับของตัวเอง
+     ป้ายกินความกว้างเพิ่มช่องละ ~40px จึงต้องย่อไอคอน/ตัวอักษร/ช่องไฟลงด้วย
+     ไม่งั้นสามช่องเหรียญจะดันคอลัมน์ "รวม" หลุดขอบการ์ดบนจอ 360–390px */
+  .mt-cell { display: flex; align-items: center; gap: 5px; text-align: left; min-width: 0; white-space: nowrap; }
+  .mt-cell b { font-size: 15px; }
+  .mt-lbl { display: flex; align-items: center; gap: 3px;
+    font-size: 10.5px; color: var(--text-muted); }
+  .mt-lbl .mt-mic { width: 11px; height: 11px; }
+  .mt-cell.total { justify-content: flex-end; }
+  .mt-cell.total b { font-size: 17px; }
+}
+
+/* =========================================================
+   ตารางการแข่งขันทั้งรายการ (schedule.html)
+   ผังทั้งรายการยาวหลายร้อยแถว การไล่เรียงเวลาอย่างเดียวจึงหาอะไรไม่เจอ
+   หน้านี้เลยเป็น "พาเนล → กลุ่มพับได้ → แถว" ไม่ใช่ตารางแบน ๆ แถวเดียวยาวตลอด
+   ไม่แบ่งหน้าและไม่ตัดข้อมูล เพราะใช้เป็นผังอ้างอิง — ตัวกรองเป็นตัวย่อของยาว ไม่ใช่ pagination
+   ========================================================= */
+.sched-days { display: flex; flex-direction: column; gap: 20px; }
+.sched-day.is-today { border-color: var(--brand); }
+.board-pill.is-now { color: var(--brand-strong); }
+
+/* ---- แถบเครื่องมือ: มุมมอง · ค้นหา · เฉพาะโรงเรียนเรา · พับ/กาง ---- */
+.sched-tools { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
+.sched-tools .tools-spacer { flex: 1; }
+.seg { display: inline-flex; gap: 2px; padding: 3px; background: var(--surface-soft);
+  border: 1px solid var(--border); border-radius: 999px; }
+.seg-btn { font-family: var(--font-body); font-size: 13px; color: var(--text-secondary); background: none;
+  border: none; border-radius: 999px; padding: 7px 16px; cursor: pointer; transition: background .15s, color .15s; }
+.seg-btn:hover { color: var(--text-primary); }
+.seg-btn.active { background: var(--brand); color: var(--on-ink); }
+.seg-btn:focus-visible { outline: 2px solid var(--brand); outline-offset: 2px; }
+
+.filter-chip { font-family: var(--font-body); font-size: 13px; color: var(--text-secondary);
+  background: var(--surface-soft); border: 1px solid var(--border); border-radius: 999px;
+  padding: 8px 15px; cursor: pointer; transition: border-color .15s, color .15s, background .15s; }
+.filter-chip:hover { border-color: var(--border-strong); color: var(--text-primary); }
+.filter-chip[aria-pressed="true"] { background: var(--brand-100); border-color: transparent; color: var(--brand-strong); }
+.filter-chip:focus-visible { outline: 2px solid var(--brand); outline-offset: 2px; }
+
+/* ---- ชิปกรองชนิดกีฬา: ตัวเลขท้ายชิปคือ "กดแล้วจะเหลือกี่รายการ" ชิปที่เหลือ 0 จางลงแต่ยังกดได้ ---- */
+.sportbar { display: flex; flex-wrap: wrap; gap: 8px; }
+/* แถบกรองที่มีตัวเลือกเดียวไม่ใช่ตัวกรอง จึงซ่อนทั้งแถบ — display ของคลาสชนะ [hidden] ของเบราว์เซอร์ */
+.daybar[hidden], .sportbar[hidden] { display: none; }
+.sporttab { display: inline-flex; align-items: center; gap: 8px; font-family: var(--font-body); font-size: 13px;
+  color: var(--text-secondary); background: var(--surface); border: 1px solid var(--border); border-radius: 999px;
+  padding: 7px 14px; cursor: pointer; transition: border-color .15s, color .15s, background .15s; }
+.sporttab:hover { border-color: var(--border-strong); color: var(--text-primary); }
+.sporttab:focus-visible { outline: 2px solid var(--brand); outline-offset: 2px; }
+.sporttab .sport-ic { width: 17px; height: 17px; flex: none; }
+.sporttab .n { font-family: var(--font-mono); font-size: 11.5px; color: var(--text-muted); }
+.sporttab.active { background: var(--brand); border-color: transparent; color: var(--on-ink); }
+.sporttab.active .n { color: var(--on-ink-soft); }
+.sporttab.is-empty, .daytab.is-empty { opacity: .45; }
+
+/* ---- กลุ่มพับได้ (details/summary — ได้คีย์บอร์ดกับ screen reader มาฟรี) ---- */
+.sg-group { border-top: 1px solid var(--border); }
+.sched-day .board-head + .sg-group { border-top: none; }
+.sg-sum { display: flex; align-items: center; gap: 11px; padding: 12px 20px; cursor: pointer;
+  list-style: none; -webkit-user-select: none; user-select: none; }
+.sg-sum::-webkit-details-marker { display: none; }
+.sg-sum:hover { background: var(--surface-soft); }
+.sg-sum:focus-visible { outline: 2px solid var(--brand); outline-offset: -2px; }
+.sg-sum .spacer { flex: 1; }
+.sg-ic { width: 32px; height: 32px; border-radius: 9px; background: var(--surface-soft); border: 1px solid var(--border);
+  display: flex; align-items: center; justify-content: center; color: var(--text-secondary); flex: none; }
+.sg-ic .sport-ic { width: 21px; height: 21px; }
+.sg-ic .ic { width: 17px; height: 17px; }
+.sg-h { display: flex; flex-direction: column; min-width: 0; line-height: 1.35; }
+.sg-name { font-size: 15px; color: var(--text-primary); }
+.sg-sub { font-family: var(--font-mono); font-size: 11.5px; color: var(--text-muted); font-variant-numeric: tabular-nums; }
+/* ลูกศรพับ/กาง วาดจากเส้นขอบสองด้าน ไม่ต้องโหลดไอคอนเพิ่มสำหรับของชิ้นเดียว */
+.sg-caret { width: 8px; height: 8px; flex: none; margin: -4px 3px 0;
+  border-right: 1.6px solid var(--text-muted); border-bottom: 1.6px solid var(--text-muted);
+  transform: rotate(45deg); transition: transform .15s, margin .15s; }
+.sg-group[open] > .sg-sum .sg-caret { transform: rotate(-135deg); margin: 3px 3px 0; }
+@media (prefers-reduced-motion: reduce) { .sg-caret { transition: none; } }
+
+/* ---- แถวรายการ: เยื้องเข้าไปใต้ไอคอนของหัวกลุ่ม ให้เห็นว่าเป็นลูกของกลุ่มไหน ---- */
+.sg-list { display: flex; flex-direction: column; padding-bottom: 6px; }
+.sg-row { display: grid; grid-template-columns: 96px minmax(0, 1fr) auto; align-items: start; gap: 2px 16px;
+  padding: 9px 20px 10px 63px; border-top: 1px solid var(--border); }
+.sg-row.is-self { background: var(--brand-100); }
+.sg-when { font-family: var(--font-mono); font-size: 14px; color: var(--text-secondary);
+  font-variant-numeric: tabular-nums; white-space: nowrap; padding-top: 1px; }
+.sg-dash { color: var(--text-muted); margin: 0 1px; }
+.sg-body { min-width: 0; }
+.sg-kind { display: block; font-size: 14.5px; color: var(--text-primary); line-height: 1.4; }
+.sg-kind.sub { font-size: 12.5px; color: var(--text-muted); }
+.sg-sport { display: flex; align-items: center; gap: 8px; color: var(--text-primary); line-height: 1.35; }
+.sg-sport .sport-ic { width: 17px; height: 17px; flex: none; }
+.sg-sport .ic { width: 16px; height: 16px; color: var(--text-muted); flex: none; }
+/* แถวเดี่ยว = กลุ่มที่มีรายการเดียว ไม่มีหัวกลุ่มอยู่เหนือมัน จึงไม่ต้องเยื้อง */
+.sg-row.is-solo { padding-left: 20px; }
+.sched-day .board-head + .sg-row { border-top: none; }
+.sg-vs { display: block; font-size: 13px; color: var(--text-secondary); line-height: 1.45; margin-top: 2px; overflow-wrap: anywhere; }
+.sg-vs b { font-weight: 400; color: var(--brand-strong); }
+.sg-vs i { font-style: normal; font-size: 12px; color: var(--text-muted); margin: 0 7px; }
+/* เวลาทุกรอบของรายการที่ยุบรวมกัน — แถวบอกช่วง "09:00–17:00" ชิปบอกว่าลงรอบไหนบ้างจริง ๆ */
+.sg-slots { display: flex; flex-wrap: wrap; gap: 5px; margin-top: 7px; }
+.sg-slot { font-family: var(--font-mono); font-size: 11.5px; color: var(--text-secondary);
+  background: var(--surface-soft); border-radius: 6px; padding: 2px 7px; font-variant-numeric: tabular-nums; }
+.sg-meta { font-size: 12px; color: var(--text-muted); white-space: nowrap; justify-self: end; padding-top: 2px; }
+
+.sched-day .board-head .sg-ic.head-ic { width: 28px; height: 28px; }
+.sched-empty { display: flex; flex-direction: column; align-items: center; gap: 12px; text-align: center; }
+.sched-empty p { color: var(--text-muted); font-size: 13.5px; margin: 0; }
+
+/* จอแคบ: เลิกเยื้อง (พื้นที่มีน้อยเกินกว่าจะจ่ายให้ระยะย่อหน้า) แล้วให้จำนวนรอบลงไปอยู่บรรทัดล่าง */
+@media (max-width: 860px) {
+  .sg-sum { padding: 12px 16px; gap: 10px; }
+  .sg-row { grid-template-columns: 74px minmax(0, 1fr); padding: 10px 16px; }
+  .sg-when { font-size: 13.5px; }
+  .sg-meta { grid-column: 2; justify-self: start; padding-top: 5px; }
+}
+
+.stable { display: flex; flex-direction: column; }
+.st-head, .st-row { display: grid; grid-template-columns: 68px minmax(0, 1.35fr) minmax(0, 1fr);
+  align-items: center; gap: 16px; padding: 0 20px; }
+/* ตารางแข่งขันมีผลกับสถานะเพิ่มมาสองช่อง ใช้โครงแถวเดียวกับผังกำหนดการ
+   เพื่อให้สองหน้าอ่านเป็นระบบเดียวกัน ไม่ใช่การ์ดคนละแบบ */
+.stable.has-result .st-head, .stable.has-result .st-row {
+  grid-template-columns: 60px minmax(0, 1.4fr) minmax(0, 1.25fr) 92px 108px; }
+.st-head { padding-top: 10px; padding-bottom: 10px; border-bottom: 1px solid var(--border);
+  font-size: 11.5px; color: var(--text-muted); }
+.st-head .st-col-end { justify-self: end; }
+
+.st-row { padding-top: 11px; padding-bottom: 11px; border-bottom: 1px solid var(--border); font-size: 14.5px; }
+.st-row:last-child { border-bottom: none; }
+.st-row.is-self { background: var(--brand-100); }
+
+.st-time { font-family: var(--font-mono); font-size: 14px; color: var(--text-secondary); font-variant-numeric: tabular-nums; }
+.st-what { min-width: 0; display: flex; flex-direction: column; gap: 1px; }
+.st-sport { display: flex; align-items: center; gap: 8px; color: var(--text-primary); line-height: 1.35; }
+.st-sport .sport-ic { width: 17px; height: 17px; }
+.st-event { font-size: 12.5px; color: var(--text-muted); line-height: 1.4; }
+.st-teams { font-size: 13px; color: var(--text-secondary); min-width: 0; line-height: 1.4; overflow-wrap: anywhere; }
+.st-teams .tag { display: block; font-size: 11px; color: var(--brand-strong); }
+.st-none { color: var(--text-muted); }
+.st-empty { padding: 26px 20px; text-align: center; color: var(--text-muted); font-size: 13.5px; }
+
+/* ผลกับสถานะ (เฉพาะตารางแข่งขัน) — สกอร์คือพระเอกของแถว จึงเป็นตัวโตสุดและชิดขวา */
+.st-result { justify-self: end; text-align: right; display: flex; flex-direction: column; align-items: flex-end; gap: 2px; }
+.st-score { font-family: var(--font-mono); font-size: 18px; color: var(--text-primary); font-variant-numeric: tabular-nums; white-space: nowrap; }
+.st-row.is-live .st-score { color: var(--live); }
+.st-unofficial { font-size: 10.5px; color: var(--text-muted); white-space: nowrap; }
+.st-state { justify-self: end; }
+/* ป้าย "ประกาศแล้ว" ขึ้นแทบทุกแถว ถ้าเป็นสีเขียวจะกลายเป็นสีตกแต่งเต็มตาราง
+   สีในตารางนี้เหลือไว้ให้ "กำลังแข่ง" ที่เป็นสิ่งเดียวที่เกิดขึ้นตอนนี้จริง ๆ */
+.stable .chip.done { background: var(--surface-soft); color: var(--text-secondary); }
+
+/* ท้ายตารางอยู่ในพาเนล จึงต้องมีระยะขอบกับเส้นคั่นของตัวเอง */
+.board-panel .table-foot { margin: 0; padding: 12px 20px 14px; border-top: 1px solid var(--border); }
+
+/* จอแคบ: เวลาอยู่ซ้ายคงที่ กีฬากับคู่แข่งเรียงลงสองบรรทัด */
+@media (max-width: 860px) {
+  .st-head { display: none; }
+  .st-row, .stable.has-result .st-row {
+    grid-template-columns: 58px minmax(0, 1fr) auto; gap: 3px 12px; padding: 13px 16px; }
+  .st-time { grid-column: 1; grid-row: 1; }
+  .st-what { grid-column: 2; grid-row: 1; }
+  .st-teams { grid-column: 2 / span 2; grid-row: 2; }
+  .st-teams .tag { display: inline; margin-left: 8px; }
+  /* ผลกับสถานะซ้อนกันมุมขวาของแถว แทนที่จะเป็นคอลัมน์แคบ ๆ สองช่อง */
+  .st-result { grid-column: 3; grid-row: 1; }
+  .st-state { grid-column: 2 / span 2; grid-row: 3; justify-self: start; margin-top: 4px; }
+}
+
+/* ===== Sports grid ===== */
+.sport-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: 10px; }
+.sport-chip { display: flex; align-items: center; gap: 11px; padding: 10px 12px; border: 1px solid var(--border); border-radius: var(--radius-md); background: var(--surface-soft); }
+.sport-chip .ic-box { width: 32px; height: 32px; border-radius: 9px; background: var(--surface); border: 1px solid var(--border); display: flex; align-items: center; justify-content: center; color: var(--text-secondary); flex: none; }
+.sport-chip .ic-box .sport-ic { width: 22px; height: 22px; }
+.sport-chip .lbl { font-size: 14px; margin: 0 0 2px; }
+.sport-chip .sub { font-size: 12px; color: var(--text-muted); margin: 0; display: flex; align-items: center; gap: 6px; }
+.sport-chip .sub .s-dot { width: 6px; height: 6px; border-radius: 50%; flex: none; }
+.sport-chip.is-live .ic-box { background: var(--live-bg); border-color: transparent; color: var(--live); }
+.s-dot.live { background: var(--live); } .s-dot.done { background: var(--done); } .s-dot.upcoming { background: var(--upcoming); }
+
+/* ===== การ์ดชนิดกีฬา (หน้าชนิดกีฬา) — มาสคอตเป็นภาพหลักของการ์ด ===== */
+.sport-cards { display: grid; grid-template-columns: repeat(auto-fill, minmax(190px, 1fr)); gap: 16px; }
+.sport-card { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius-lg);
+  box-shadow: var(--shadow); overflow: hidden; display: flex; flex-direction: column; }
+.sc-art { position: relative; height: 200px; display: flex; align-items: flex-end; justify-content: center;
+  padding: 14px 12px 0; background: linear-gradient(165deg, var(--brand-100), var(--surface-soft)); }
+.sc-mascot { max-width: 100%; max-height: 100%; object-fit: contain; object-position: bottom;
+  filter: drop-shadow(0 6px 10px oklch(30% 0.05 260 / .18)); }
+.sc-fallback { display: flex; align-items: center; justify-content: center; width: 100%; height: 100%; color: var(--brand-strong); }
+.sc-fallback .sport-ic { width: 104px; height: 104px; opacity: 1; }
+.sc-flag { position: absolute; top: 10px; left: 10px; background: var(--live); color: var(--on-ink); }
+.sport-card.is-live .sc-art { background: linear-gradient(165deg, var(--live-bg), var(--surface-soft)); }
+.sc-body { padding: 13px 15px 14px; }
+.sc-body .lbl { font-family: var(--font-display); font-size: 15px; margin: 0; }
+
+/* =========================================================
+   หน้าโรงเรียน — อ่านกลางแดดบนมือถือเป็นหลัก ตัวใหญ่กว่าหน้าอื่น
+   สีจัดปรากฏได้ 2 ที่เท่านั้น: สถานะกำลังแข่ง และแถบเหรียญ
+   ========================================================= */
+.sr-only { position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; border: 0; }
+
+.school-page { font-size: 16px; gap: 32px; }
+
+.sch-top { display: flex; align-items: center; justify-content: space-between; gap: 12px; flex-wrap: wrap; }
+.btn-back { display: inline-flex; align-items: center; gap: 8px; min-height: 44px; padding: 10px 18px 10px 14px; border-radius: 999px;
+  background: var(--surface); border: 1px solid var(--border); color: var(--text-secondary); text-decoration: none; font-size: 14px;
+  transition: border-color .15s, color .15s; }
+.btn-back:hover { border-color: var(--border-strong); color: var(--text-primary); }
+.btn-back:focus-visible { outline: 2px solid var(--brand); outline-offset: 2px; }
+.btn-back-ic { font-size: 18px; line-height: 1; }
+.sch-sync { font-size: 13px; color: var(--medal-bronze); font-variant-numeric: tabular-nums; }
+.sch-sync[hidden] { display: none; }
+
+.sch-cols { display: flex; flex-direction: column; gap: 28px; }
+.sch-aside, .sch-body { display: flex; flex-direction: column; gap: 24px; min-width: 0; }
+
+.sch-id { display: flex; flex-wrap: wrap; align-items: center; gap: 6px 12px; }
+.sch-crest { width: 54px; height: 54px; }
+.sch-id h1 { font-family: var(--font-display); font-size: 26px; font-weight: 400; line-height: 1.3; margin: 0;
+  color: var(--text-primary); text-wrap: balance; max-width: 28ch; }
+.sch-id .tag { padding: 4px 12px; border-radius: 999px; background: var(--brand-100); color: var(--brand-strong); font-size: 12.5px; }
+
+/* ตัวเลขหลัก: อันดับ + เหรียญ อ่านได้ในระยะแขนกลางแดด */
+.sch-stat { display: grid; grid-template-columns: minmax(120px, 200px) 1fr; gap: 28px; align-items: center;
+  padding: 22px 0 26px; border-top: 1px solid var(--border-strong); border-bottom: 1px solid var(--border); }
+.sch-rank .cap { font-size: 12.5px; letter-spacing: .08em; color: var(--text-secondary); margin: 0; }
+.sch-rank .num { font-family: var(--font-mono); font-size: 60px; line-height: .95; margin: 4px 0 6px; font-variant-numeric: tabular-nums; }
+.sch-rank .of { font-size: 13.5px; color: var(--text-secondary); margin: 0; }
+.sch-medals { display: flex; flex-direction: column; gap: 8px; max-width: 300px; }
+.sch-medal-line { display: grid; grid-template-columns: 10px 1fr auto; align-items: center; gap: 12px; }
+.sch-medal-line .lbl { font-size: 14.5px; color: var(--text-secondary); }
+.sch-medal-line .num { font-family: var(--font-mono); font-size: 22px; font-variant-numeric: tabular-nums; }
+.sch-medal-line.total { grid-column: 1 / -1; grid-template-columns: 1fr auto; margin-top: 6px; padding-top: 10px; border-top: 1px solid var(--border); }
+.sch-medal-line.total .lbl { color: var(--text-primary); }
+.sch-medal-line.total .num { font-size: 26px; }
+.sch-zero { font-size: 15px; color: var(--text-secondary); margin: 0; }
+.sch-gap { display: flex; flex-direction: column; gap: 6px; }
+.sch-gap p { font-size: 14.5px; color: var(--text-secondary); margin: 0; line-height: 1.6; max-width: 62ch; }
+
+/* สถานะสด — จุดเดียวในหน้าที่ได้ใช้สีเต็ม */
+.sch-live { background: var(--live-bg); border: 1px solid color-mix(in oklch, var(--live) 32%, transparent);
+  border-radius: var(--radius-lg); padding: 20px 22px; }
+.sch-live-head { display: flex; align-items: center; gap: 10px; font-family: var(--font-display); font-weight: 400;
+  font-size: 17px; margin: 0 0 4px; color: var(--live); }
+.sch-quiet { border: 1px solid var(--border); border-radius: var(--radius-lg); padding: 18px 22px; background: var(--surface); }
+.sch-quiet h2 { font-family: var(--font-display); font-weight: 400; font-size: 16px; margin: 0 0 6px; }
+.sch-quiet p { font-size: 14px; color: var(--text-secondary); margin: 0; }
+
+.sch-sec h2 { font-family: var(--font-display); font-weight: 400; font-size: 17px; margin: 0 0 6px; display: flex; align-items: baseline; gap: 9px; }
+.sch-sec h2 .count { font-family: var(--font-mono); font-size: 13px; color: var(--text-secondary); }
+.sch-note { font-size: 14px; color: var(--text-secondary); margin: 8px 0 0; }
+.sch-foot { font-size: 12.5px; color: var(--text-muted); margin: 0; line-height: 1.6; }
+
+.sch-match-list { list-style: none; margin: 4px 0 0; padding: 0; display: flex; flex-direction: column; }
+.sch-match { display: grid; grid-template-columns: auto 1fr auto; align-items: center; gap: 15px; padding: 15px 0; border-top: 1px solid var(--border); }
+.sch-match-list .sch-match:first-child { border-top: none; }
+.sch-live .sch-match { border-top-color: color-mix(in oklch, var(--live) 22%, transparent); }
+.sch-live .fx-ic { background: var(--surface); border-color: color-mix(in oklch, var(--live) 25%, transparent); color: var(--live); }
+.sch-live .sch-match-side .score { color: var(--live); }
+.sch-match-body { min-width: 0; }
+.sch-match-body .ev { font-size: 15px; margin: 0 0 3px; }
+.sch-match-body .meta { font-size: 13px; color: var(--text-secondary); margin: 0; }
+.sch-match-side { display: flex; flex-direction: column; align-items: flex-end; gap: 5px; text-align: right; }
+.sch-match-side .when { font-family: var(--font-mono); font-size: 12.5px; color: var(--text-secondary); white-space: nowrap; }
+.sch-match-side .score { font-family: var(--font-mono); font-size: 19px; font-variant-numeric: tabular-nums; }
+.sch-sport-medals { display: flex; gap: 12px; font-family: var(--font-mono); color: var(--text-secondary); }
+.sch-sport-medals span { display: inline-flex; align-items: center; gap: 5px; }
+
+.sch-msg { padding: 8px 0; }
+.sch-msg h1 { font-family: var(--font-display); font-size: 22px; font-weight: 400; margin: 0 0 8px; }
+.sch-msg p { font-size: 14.5px; color: var(--text-secondary); margin: 0 0 18px; max-width: 52ch; }
+.btn-solid { display: inline-flex; align-items: center; min-height: 44px; padding: 11px 20px; border-radius: 999px;
+  background: var(--brand); color: var(--on-ink); text-decoration: none; font-size: 14px; }
+.btn-solid:hover { background: var(--brand-strong); }
+.btn-solid:focus-visible { outline: 2px solid var(--brand); outline-offset: 2px; }
+
+/* โครงร่างระหว่างรอข้อมูล (deep link เข้าหน้านี้ตรง ๆ) */
+.sch-skeleton .sch-aside, .sch-skeleton .sch-body { gap: 14px; }
+.sk { display: block; border-radius: 10px; background: var(--surface-soft); }
+.sk-stat { display: flex; align-items: center; gap: 20px; padding: 6px 0; }
+.sk-col { flex: 1; display: flex; flex-direction: column; gap: 12px; }
+@media (prefers-reduced-motion: no-preference) {
+  .sk { animation: skeleton 1.4s ease-in-out infinite; }
+  @keyframes skeleton { 0%, 100% { opacity: 1; } 50% { opacity: .55; } }
+}
+
+/* ===== Footnote ===== */
+.footnote { display: flex; align-items: center; justify-content: space-between; gap: 12px; padding-top: 4px; font-size: 12px; color: var(--text-muted); }
+
+/* ===== Responsive ===== */
+/* จอกว้าง: ตัวตนโรงเรียน + อันดับ + เหรียญ ค้างอยู่ซ้าย รายการแข่งขันเลื่อนอยู่ขวา */
+@media (min-width: 1180px) {
+  .sch-cols { display: grid; grid-template-columns: 1fr 1.4fr; gap: 44px; align-items: start; }
+  .sch-aside { position: sticky; top: 92px; }
+  .sch-stat { grid-template-columns: 1fr; gap: 20px; }
+  .sch-medals { max-width: none; }
+}
+@media (max-width: 1100px) {
+  .row-mid, .row-bottom { grid-template-columns: 1fr; }
+}
+/* แถบวันแข่งขัน: จอแคบลงให้ซ้อนกัน เส้นคั่นย้ายจากแนวตั้งเป็นแนวนอน */
+@media (max-width: 900px) {
+  .today { grid-template-columns: 1fr; gap: 22px; padding: 22px 24px; }
+  .today-school { border-left: none; border-top: 1px solid var(--board-line); padding-left: 0; padding-top: 22px; }
+  /* คอลัมน์ซ้อนกันแล้ว มาสคอตจะไปทับข้อความของบล็อกล่าง จึงย่อลงและเลิกเว้นที่ด้านขวา */
+  .today-day.has-mascot { padding-right: 120px; }
+  .t-mascot { height: 160px; bottom: 0; }
+}
+@media (max-width: 560px) {
+  .today-day.has-mascot { padding-right: 0; }
+  .t-mascot { display: none; }
+}
+@media (max-width: 860px) {
+  .app { grid-template-columns: 1fr; }
+  .sidebar { position: fixed; left: 0; top: 0; width: var(--side-w); transform: translateX(-100%); transition: transform .22s ease; box-shadow: var(--shadow-card); }
+  .app.side-open .sidebar { transform: translateX(0); }
+  .menu-btn { display: flex; }
+}
+@media (max-width: 560px) {
+  .main { padding: 16px 14px 40px; }
+  .kpi-cards { grid-template-columns: 1fr; }
+  .school-chip-text { display: none; }
+  .sync span:last-child { display: none; }
+  /* หัวพาเนลตัดบรรทัดอยู่แล้วบนจอแคบ ช่องค้นหาจึงได้ทั้งบรรทัดเป็นของตัวเอง
+     ที่ 130px ข้อความบอกใบ้ถูกตัดเหลือ "ค้นหากีฬา / โร" จนไม่รู้ว่าค้นอะไรได้บ้าง */
+  .table-search { flex: 1 1 100%; }
+  .table-search input { width: 100%; }
+  .footnote { flex-direction: column; align-items: flex-start; }
+
+  /* การ์ดชนิดกีฬา: ที่ 190px คอลัมน์เดียวเต็มจอ การ์ดใบเดียวสูงเกือบ 300px
+     15 ชนิดกลายเป็นการเลื่อนยาวมาก — ลดขั้นต่ำให้ได้ 2 คอลัมน์บนจอ 360px ขึ้นไป */
+  .sport-cards { grid-template-columns: repeat(auto-fill, minmax(140px, 1fr)); gap: 12px; }
+
+  /* หน้าโรงเรียนบนมือถือ: อันดับอยู่บน เหรียญอยู่ล่าง เวลา/สกอร์ย้ายลงบรรทัดใหม่ */
+  .school-page { gap: 26px; }
+  .sch-stat { grid-template-columns: 1fr; gap: 20px; padding: 18px 0 22px; }
+  .sch-rank { display: flex; align-items: baseline; gap: 12px; flex-wrap: wrap; }
+  .sch-rank .cap { order: 1; }
+  .sch-rank .num { order: 2; font-size: 52px; margin: 0; }
+  .sch-rank .of { order: 3; }
+  .sch-medals { max-width: none; }
+  .sch-id h1 { font-size: 22px; }
+  .sch-live, .sch-quiet { padding: 16px 16px 18px; margin: 0 -2px; }
+  .sch-match { grid-template-columns: auto 1fr; gap: 12px; }
+  .sch-match-side { grid-column: 2; flex-direction: row; align-items: center; justify-content: flex-start; gap: 10px; flex-wrap: wrap; text-align: left; }
+
+  /* หน้าหลักบนมือถือ: ภาพเตี้ยลง ไม่งั้นกินทั้งจอจนไม่เห็นว่ามีเนื้อหาอยู่ข้างล่าง */
+  .hero-stage { height: clamp(260px, 46vh, 400px); }
+  .hero-cap { padding: 40px 16px 16px; }
+  .hero-title { font-size: 18px; }
+  .hero-count { right: 10px; bottom: 10px; font-size: 11.5px; padding: 4px 10px; }
+  .live-grid { grid-template-columns: 1fr; }
+  .lm-team .tname { font-size: 12.5px; }
+}
+/* ประกาศไว้ท้ายไฟล์: กฎเดียวกันที่บรรทัดบน ๆ ถูก .live-dot ซึ่งประกาศทีหลังทับจนไม่มีผล */
+@media (prefers-reduced-motion: reduce) {
+  .sidebar { transition: none; }
+  .sync-dot, .live-dot, .sk { animation: none; }
+  .mt-row, .btn-back, .daytab, .icon-btn { transition: none; }
+  .hero-slide { transition: none; }
+}

@@ -1,0 +1,205 @@
+/* =========================================================
+   input.css — ต้นทางของสไตล์ทั้งเว็บ (Tailwind CSS v4)
+   ไฟล์ที่เบราว์เซอร์โหลดคือ public/css/app.css ซึ่ง "สร้างจากไฟล์นี้" — ห้ามแก้ไฟล์นั้นตรง ๆ
+   สร้างใหม่ด้วย `npm run build:css` (หรือ `npm run dev:css` แบบเฝ้าดูไฟล์)
+
+   คลาสทั้งหมดในหน้าเว็บเป็น utility ของ Tailwind ไฟล์นี้จึงเหลือแค่ 4 อย่างที่
+   เขียนเป็น utility ไม่ได้: ฟอนต์, ตัวแปรธีม (สี/เงา/มุมโค้ง), คีย์เฟรม และรูปทรง mask
+   ฟอนต์: Srinakharinwirot (ไฟล์ที่ /fonts เท่านั้น ไม่มีฟอนต์สำรองอื่น)
+   ========================================================= */
+
+@import "tailwindcss" source(none);
+@source "../public/**/*.{html,js}";
+
+@font-face {
+  font-family: 'Srinakharinwirot';
+  src: url('../fonts/srinakharinwirot-regular.eot');
+  src: url('../fonts/srinakharinwirot-regular.eot?#iefix') format('embedded-opentype'),
+       url('../fonts/srinakharinwirot-regular.woff2') format('woff2'),
+       url('../fonts/srinakharinwirot-regular.woff') format('woff');
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+
+/* =========================================================
+   ตัวแปรธีม — ชื่อ token คือชื่อ utility (--color-surface → bg-surface / text-surface)
+   ค่าทั้งหมดเป็นตัวแปร CSS จริง โหมดมืดจึงสลับได้ที่เดียวข้างล่าง
+   โดยไม่ต้องติด dark: ไว้ทุก utility ในหน้าเว็บ
+   ========================================================= */
+@theme {
+  --font-display: 'Srinakharinwirot', sans-serif;
+  --font-body: 'Srinakharinwirot', sans-serif;
+  --font-mono: 'Srinakharinwirot', monospace;
+
+  --color-paper: oklch(96.5% 0.012 250);
+  --color-surface: oklch(99% 0.002 250);
+  --color-surface-soft: oklch(95.5% 0.01 250);
+  --color-line: oklch(91% 0.012 250);
+  --color-line-strong: oklch(83% 0.016 250);
+
+  /* fg = ตัวหนังสือ · ink = พื้นเข้มที่มีตัวหนังสือสว่างอยู่บน (on-ink) */
+  --color-fg: oklch(22% 0.03 260);
+  --color-fg-soft: oklch(42% 0.02 260);
+  --color-fg-mute: oklch(52% 0.018 260);
+  --color-ink: oklch(22% 0.03 260);
+  --color-on-ink: oklch(99% 0.002 250);
+  --color-on-ink-soft: oklch(99% 0.002 250 / .65);
+
+  /* หนึ่งสีเน้นสำหรับส่วนที่โต้ตอบได้ (ลิงก์ เมนูที่เลือก โฟกัส) — ไม่ใช่สีตกแต่ง */
+  --color-brand: oklch(56% 0.19 260);
+  --color-brand-strong: oklch(48% 0.19 260);
+  --color-brand-100: oklch(93% 0.03 260);
+
+  /* สีเหรียญ: บอกความหมายจริง ไม่ใช่สีตกแต่ง */
+  --color-gold: oklch(74% 0.15 80);
+  --color-silver: oklch(74% 0.008 250);
+  --color-bronze: oklch(60% 0.12 45);
+  /* เฉดเข้มสำหรับ "ตัวเลข" โดยเฉพาะ — สีเหรียญสดเกินกว่าจะอ่านเป็นตัวหนังสือกลางแดด */
+  --color-gold-ink: oklch(52% 0.13 75);
+  --color-silver-ink: oklch(48% 0.012 250);
+  --color-bronze-ink: oklch(47% 0.13 42);
+
+  /* สีสถานะ: จุดเดียวในเว็บที่ "สด/กำลังเกิดขึ้น" ได้ใช้สี ข้อมูลนิ่งอื่นทั้งหมดเป็นกลาง */
+  --color-live: oklch(64% 0.20 350);
+  --color-live-bg: oklch(94% 0.03 350);
+  --color-done: oklch(62% 0.13 155);
+  --color-done-bg: oklch(93% 0.04 155);
+  --color-upcoming: oklch(52% 0.018 260);
+  --color-upcoming-bg: oklch(95.5% 0.01 250);
+
+  --radius-lg: 18px;
+  --radius-md: 14px;
+  --radius-sm: 10px;
+
+  --shadow-panel: 0 6px 20px oklch(40% 0.04 260 / .07);
+  --shadow-card: 0 14px 32px oklch(40% 0.04 260 / .12);
+
+  --animate-sync-pulse: sync-pulse 2.2s ease-in-out infinite;
+  --animate-blink: blink 1.5s ease-in-out infinite;
+  --animate-skeleton: skeleton 1.4s ease-in-out infinite;
+  /* ป๊อปอัปรายละเอียดกีฬา — เด้งเข้าสั้น ๆ พอให้ตาจับได้ว่ากล่องใหม่มาจากการ์ดที่เพิ่งแตะ */
+  --animate-pop-in: pop-in .16s ease-out;
+}
+
+/* โหมดมืด — สลับเฉพาะค่าของ token ชุดเดิม utility ในหน้าเว็บไม่ต้องรู้เรื่องธีมเลย
+   ประกาศนอก @layer จึงชนะค่าตั้งต้นจาก @theme เสมอ
+   สองบล็อกนี้ค่าเหมือนกัน: บล็อกแรกคือธีมของเครื่อง บล็อกที่สองคือปุ่มสลับที่ผู้ใช้กดเอง */
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --color-paper: oklch(17% 0.025 260);
+    --color-surface: oklch(22% 0.028 260);
+    --color-surface-soft: oklch(20% 0.026 260);
+    --color-line: oklch(31% 0.03 260);
+    --color-line-strong: oklch(39% 0.03 260);
+    --color-fg: oklch(93% 0.012 260);
+    --color-fg-soft: oklch(75% 0.018 260);
+    --color-fg-mute: oklch(60% 0.016 260);
+    --color-ink: oklch(93% 0.012 260);
+    --color-on-ink: oklch(17% 0.025 260);
+    --color-on-ink-soft: oklch(17% 0.025 260 / .6);
+    --color-brand: oklch(68% 0.17 260);
+    --color-brand-strong: oklch(74% 0.16 260);
+    --color-brand-100: oklch(28% 0.05 260);
+    --color-gold: oklch(78% 0.13 82);
+    --color-silver: oklch(78% 0.008 250);
+    --color-bronze: oklch(66% 0.12 45);
+    --color-gold-ink: oklch(82% 0.12 84);
+    --color-silver-ink: oklch(80% 0.01 250);
+    --color-bronze-ink: oklch(72% 0.12 45);
+    --color-live: oklch(72% 0.17 350);
+    --color-live-bg: oklch(28% 0.05 350);
+    --color-done: oklch(68% 0.13 155);
+    --color-done-bg: oklch(25% 0.04 155);
+    --color-upcoming: oklch(75% 0.018 260);
+    --color-upcoming-bg: oklch(26% 0.02 260);
+    --shadow-panel: 0 1px 2px oklch(0% 0 0 / .3), 0 8px 24px oklch(0% 0 0 / .4);
+    --shadow-card: 0 10px 26px oklch(0% 0 0 / .45);
+  }
+}
+
+:root[data-theme="dark"] {
+  --color-paper: oklch(17% 0.025 260);
+  --color-surface: oklch(22% 0.028 260);
+  --color-surface-soft: oklch(20% 0.026 260);
+  --color-line: oklch(31% 0.03 260);
+  --color-line-strong: oklch(39% 0.03 260);
+  --color-fg: oklch(93% 0.012 260);
+  --color-fg-soft: oklch(75% 0.018 260);
+  --color-fg-mute: oklch(60% 0.016 260);
+  --color-ink: oklch(93% 0.012 260);
+  --color-on-ink: oklch(17% 0.025 260);
+  --color-on-ink-soft: oklch(17% 0.025 260 / .6);
+  --color-brand: oklch(68% 0.17 260);
+  --color-brand-strong: oklch(74% 0.16 260);
+  --color-brand-100: oklch(28% 0.05 260);
+  --color-gold: oklch(78% 0.13 82);
+  --color-silver: oklch(78% 0.008 250);
+  --color-bronze: oklch(66% 0.12 45);
+  --color-gold-ink: oklch(82% 0.12 84);
+  --color-silver-ink: oklch(80% 0.01 250);
+  --color-bronze-ink: oklch(72% 0.12 45);
+  --color-live: oklch(72% 0.17 350);
+  --color-live-bg: oklch(28% 0.05 350);
+  --color-done: oklch(68% 0.13 155);
+  --color-done-bg: oklch(25% 0.04 155);
+  --color-upcoming: oklch(75% 0.018 260);
+  --color-upcoming-bg: oklch(26% 0.02 260);
+  --shadow-panel: 0 1px 2px oklch(0% 0 0 / .3), 0 8px 24px oklch(0% 0 0 / .4);
+  --shadow-card: 0 10px 26px oklch(0% 0 0 / .45);
+}
+
+/* variant dark: — ใช้เฉพาะที่สลับค่าสีไม่พอ (ไอคอนพระอาทิตย์/พระจันทร์, แผ่นรองโลโก้) */
+@custom-variant dark {
+  &:where([data-theme="dark"], [data-theme="dark"] *) { @slot }
+  @media (prefers-color-scheme: dark) {
+    &:where(:root:not([data-theme="light"]), :root:not([data-theme="light"]) *) { @slot }
+  }
+}
+
+@layer base {
+  /* JS ซ่อน/แสดงองค์ประกอบด้วย property `hidden` ของ DOM ไม่ใช่การสลับคลาส
+     กฎนี้ทำให้ [hidden] ชนะ utility ที่ตั้ง display (flex/grid/block) ได้เสมอ */
+  [hidden] { display: none !important; }
+}
+
+/* คีย์เฟรม: heroFill ถูกเรียกด้วยชื่อจาก JS (home.js) จึงต้องอยู่นอก @theme ให้มีอยู่เสมอ */
+@keyframes sync-pulse {
+  0%, 100% { opacity: 1; box-shadow: 0 0 0 0 oklch(62% 0.13 155 / .3); }
+  50% { opacity: .6; box-shadow: 0 0 0 5px oklch(62% 0.13 155 / 0); }
+}
+@keyframes blink { 0%, 100% { opacity: 1; } 50% { opacity: .3; } }
+@keyframes pop-in { from { opacity: 0; transform: scale(.96); } to { opacity: 1; transform: scale(1); } }
+@keyframes skeleton { 0%, 100% { opacity: 1; } 50% { opacity: .55; } }
+@keyframes heroFill { from { transform: scaleX(0); } to { transform: scaleX(1); } }
+
+/* =========================================================
+   utility เพิ่มเอง 2 ตัว — ทั้งคู่เป็น "รูปทรง mask" ที่เขียนเป็น utility สำเร็จรูปไม่ได้
+   ========================================================= */
+
+/* ไอคอน UI: รูปทรงมาจาก JS (paintUiIcons ใน common.js ตั้ง mask-image ให้ [data-ic])
+   ตัวไอคอนย้อมด้วยสีข้อความรอบ ๆ จึงคุมสีได้ด้วย utility text-* ตามปกติ */
+@utility icon-mask {
+  display: inline-block;
+  flex: none;
+  background-color: currentColor;
+  -webkit-mask-repeat: no-repeat;
+          mask-repeat: no-repeat;
+  -webkit-mask-position: center;
+          mask-position: center;
+  -webkit-mask-size: contain;
+          mask-size: contain;
+}
+
+/* ไอคอนเหรียญ: วงกลมเจาะดาว — รูปทรงเดียว ย้อมได้ 3 สีด้วย utility bg-gold / bg-silver-ink / bg-bronze
+   ใช้ "คู่กับข้อความกำกับเสมอ" (ทอง/เงิน/ทองแดง) ตามข้อห้ามสื่อความหมายด้วยสีอย่างเดียว */
+@utility medal-mic {
+  display: inline-block;
+  flex: none;
+  -webkit-mask: var(--mic-medal) center / contain no-repeat;
+          mask: var(--mic-medal) center / contain no-repeat;
+}
+
+:root {
+  --mic-medal: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath fill='%23000' fill-rule='evenodd' d='M2.8 12a9.2 9.2 0 1 0 18.4 0 9.2 9.2 0 1 0-18.4 0zM12 7.4l1.15 3.02 3.22.16-2.52 2.02.85 3.12L12 13.95l-2.7 1.77.85-3.12-2.52-2.02 3.22-.16z'/%3E%3C/svg%3E");
+}

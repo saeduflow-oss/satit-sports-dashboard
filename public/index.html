@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="th" data-theme="light">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>หน้าหลัก — กีฬาสาธิตสามัคคี</title>
+  <meta name="description" content="แดชบอร์ดประกาศผลการแข่งขันกีฬาสาธิตสามัคคีแบบเรียลไทม์ สรุปอันดับและเหรียญรางวัลของโรงเรียนเรา" />
+  <link rel="stylesheet" href="css/app.css" />
+</head>
+<body class="min-h-screen bg-paper font-body leading-[1.6] tracking-[.01em] text-fg antialiased selection:bg-brand-100 selection:text-brand-strong">
+  <a class="absolute top-0 -left-[999px] z-[100] rounded-br-[8px] bg-ink px-4 py-2.5 text-on-ink focus:left-0" href="#main">ข้ามไปยังเนื้อหาหลัก</a>
+
+  <div class="group grid min-h-screen grid-cols-[252px_1fr] max-[860px]:grid-cols-1" id="app">
+    <!-- ===================== SIDEBAR ===================== -->
+    <aside class="sticky top-0 z-40 flex h-screen flex-col border-r border-line bg-surface max-[860px]:fixed max-[860px]:top-0 max-[860px]:left-0 max-[860px]:w-[252px] max-[860px]:-translate-x-full max-[860px]:shadow-card max-[860px]:transition-transform max-[860px]:duration-[220ms] max-[860px]:group-data-[side=open]:translate-x-0 motion-reduce:transition-none" id="sidebar" aria-label="เมนูหลัก">
+      <div class="px-[22px] pt-5 pb-4">
+        <!-- โลโก้เป็นภาพตัวอักษรสีเข้ม จึงต้องมีแผ่นรองสีขาวเมื่ออยู่บนพื้นหลังโหมดมืด -->
+        <img class="block h-auto w-full dark:rounded-md dark:bg-white dark:px-3 dark:py-2.5" src="assets/logo/satitpatumwan.png" alt="โรงเรียนสาธิตมหาวิทยาลัยศรีนครินทรวิโรฒ ปทุมวัน" width="776" height="214" decoding="async" />
+      </div>
+      <nav class="flex flex-1 flex-col gap-[3px] overflow-y-auto px-3.5 py-2.5" aria-label="นำทางแดชบอร์ด">
+        <a class="group/nav flex items-center gap-3 rounded-md px-3.5 py-[11px] text-[13.5px] text-fg-soft no-underline transition-[background-color,color] duration-150 hover:bg-surface-soft hover:text-fg focus-visible:outline-2 focus-visible:-outline-offset-2 focus-visible:outline-brand aria-[current=page]:bg-brand aria-[current=page]:text-on-ink aria-[current=page]:shadow-card motion-reduce:transition-none" href="index.html" data-page="home"><i class="icon-mask size-[18px] opacity-80 group-aria-[current=page]/nav:opacity-100" data-ic="dashboard"></i><span>หน้าหลัก</span></a>
+        <a class="group/nav flex items-center gap-3 rounded-md px-3.5 py-[11px] text-[13.5px] text-fg-soft no-underline transition-[background-color,color] duration-150 hover:bg-surface-soft hover:text-fg focus-visible:outline-2 focus-visible:-outline-offset-2 focus-visible:outline-brand aria-[current=page]:bg-brand aria-[current=page]:text-on-ink aria-[current=page]:shadow-card motion-reduce:transition-none" href="schedule.html" data-page="schedule"><i class="icon-mask size-[18px] opacity-80 group-aria-[current=page]/nav:opacity-100" data-ic="calendar"></i><span>ตารางการแข่งขัน</span></a>
+        <a class="group/nav flex items-center gap-3 rounded-md px-3.5 py-[11px] text-[13.5px] text-fg-soft no-underline transition-[background-color,color] duration-150 hover:bg-surface-soft hover:text-fg focus-visible:outline-2 focus-visible:-outline-offset-2 focus-visible:outline-brand aria-[current=page]:bg-brand aria-[current=page]:text-on-ink aria-[current=page]:shadow-card motion-reduce:transition-none" href="matches.html" data-page="matches"><i class="icon-mask size-[18px] opacity-80 group-aria-[current=page]/nav:opacity-100" data-ic="results"></i><span>ผลการแข่งขัน</span></a>
+        <a class="group/nav flex items-center gap-3 rounded-md px-3.5 py-[11px] text-[13.5px] text-fg-soft no-underline transition-[background-color,color] duration-150 hover:bg-surface-soft hover:text-fg focus-visible:outline-2 focus-visible:-outline-offset-2 focus-visible:outline-brand aria-[current=page]:bg-brand aria-[current=page]:text-on-ink aria-[current=page]:shadow-card motion-reduce:transition-none" href="medals.html" data-page="medals"><i class="icon-mask size-[18px] opacity-80 group-aria-[current=page]/nav:opacity-100" data-ic="medal"></i><span>อันดับเหรียญรางวัล</span></a>
+        <a class="group/nav flex items-center gap-3 rounded-md px-3.5 py-[11px] text-[13.5px] text-fg-soft no-underline transition-[background-color,color] duration-150 hover:bg-surface-soft hover:text-fg focus-visible:outline-2 focus-visible:-outline-offset-2 focus-visible:outline-brand aria-[current=page]:bg-brand aria-[current=page]:text-on-ink aria-[current=page]:shadow-card motion-reduce:transition-none" href="sports.html" data-page="sports"><i class="icon-mask size-[18px] opacity-80 group-aria-[current=page]/nav:opacity-100" data-ic="sports"></i><span>ชนิดกีฬา</span></a>
+      </nav>
+    </aside>
+    <div class="fixed inset-0 z-[39] border-0 bg-[oklch(24%_0.03_260/.45)]" id="scrim" hidden></div>
+
+    <!-- ===================== MAIN ===================== -->
+    <div class="flex min-w-0 flex-col">
+      <header class="sticky top-0 z-30 flex items-center gap-3.5 border-b border-line bg-paper/85 px-[26px] py-4 backdrop-blur-[14px]">
+        <button class="relative hidden size-[38px] flex-none cursor-pointer items-center justify-center rounded-[11px] border border-line bg-surface text-fg-soft transition-[border-color,color] duration-150 hover:border-line-strong hover:text-fg focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand max-[860px]:flex motion-reduce:transition-none" id="menuBtn" type="button" aria-label="เปิด/ปิดเมนู"><i class="icon-mask size-[19px]" data-ic="menu"></i></button>
+        <div class="flex-1"></div>
+        <div class="flex items-center gap-3">
+          <span class="flex items-center gap-2 text-[12.5px] whitespace-nowrap text-fg-soft" role="status" aria-live="polite">
+            <span class="size-[7px] flex-none rounded-full bg-done motion-safe:animate-sync-pulse" aria-hidden="true"></span>
+            <span class="max-[560px]:hidden">อัปเดตเมื่อ <b class="font-normal tabular-nums" id="syncTime">— วินาที</b> ที่แล้ว</span>
+          </span>
+          <button class="relative flex size-[38px] flex-none cursor-pointer items-center justify-center rounded-[11px] border border-line bg-surface text-fg-soft transition-[border-color,color] duration-150 hover:border-line-strong hover:text-fg focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand motion-reduce:transition-none" id="liveBell" type="button" aria-label="รายการที่กำลังแข่งสด">
+            <i class="icon-mask size-[19px]" data-ic="live"></i>
+            <span class="absolute -top-1 -right-1 flex h-[17px] min-w-[17px] items-center justify-center rounded-full bg-live px-1 font-mono text-[10px] text-on-ink" id="liveBadge" hidden>0</span>
+          </button>
+          <button class="relative flex size-[38px] flex-none cursor-pointer items-center justify-center rounded-[11px] border border-line bg-surface text-fg-soft transition-[border-color,color] duration-150 hover:border-line-strong hover:text-fg focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand motion-reduce:transition-none" id="themeToggle" type="button" aria-label="สลับโหมดสว่าง/มืด">
+            <svg class="block dark:hidden" viewBox="0 0 24 24" width="18" height="18" fill="none"><circle cx="12" cy="12" r="4.2" stroke="currentColor" stroke-width="1.6"/><path d="M12 2.5v2.5M12 19v2.5M4.6 4.6l1.8 1.8M17.6 17.6l1.8 1.8M2.5 12h2.5M19 12h2.5M4.6 19.4l1.8-1.8M17.6 6.4l1.8-1.8" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg>
+            <svg class="hidden dark:block" viewBox="0 0 24 24" width="18" height="18" fill="none"><path d="M20 14.5A8 8 0 019.5 4a7 7 0 108.9 8.9 8 8 0 011.6 1.6z" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/></svg>
+          </button>
+        </div>
+      </header>
+
+      <main id="main" class="mx-auto flex w-full max-w-[1180px] flex-col gap-7 px-8 pt-8 pb-14 max-[560px]:px-3.5 max-[560px]:pt-4 max-[560px]:pb-10">
+        <!-- หน้านี้ไม่แสดงหัวข้อแล้ว แต่ยังต้องมี h1 ให้โปรแกรมอ่านหน้าจอรู้ว่าหน้านี้คือหน้าอะไร -->
+        <h1 class="sr-only">แดชบอร์ดกีฬาสาธิตสามัคคี</h1>
+
+        <!-- ===== ภาพบรรยากาศจากแท็บ img ในชีต: ซ่อนทั้งแถบเมื่อยังไม่มีภาพ ===== -->
+        <section class="relative flex overflow-hidden rounded-lg border border-line bg-surface-soft shadow-panel" id="hero" aria-roledescription="สไลด์ภาพ" aria-label="ภาพบรรยากาศการแข่งขัน" hidden>
+          <!-- ภาพเป็นตัวเปิดหน้าแล้ว จึงให้สูงตามจอ แต่คุมเพดานไว้ไม่ให้แถวล่างหลุดพ้นหน้าจอไปหมด -->
+          <div class="relative h-[clamp(340px,58vh,620px)] flex-1 max-[560px]:h-[clamp(260px,46vh,400px)]" id="heroStage"></div>
+          <!-- ตัวบอกตำแหน่งไม่โตตามจำนวนรูป จะ 3 รูปหรือ 30 รูปก็หน้าตาเท่าเดิม
+               ข้อมูลเดียวกันนี้อยู่ใน aria-label ของแต่ละสไลด์แล้ว ตรงนี้จึงซ่อนจากโปรแกรมอ่านหน้าจอ -->
+          <p class="absolute right-3.5 bottom-3.5 m-0 rounded-full bg-[oklch(16%_0.02_260/.55)] px-3 py-[5px] font-mono text-[12.5px] tracking-[.04em] tabular-nums text-white backdrop-blur-[6px] max-[560px]:right-2.5 max-[560px]:bottom-2.5 max-[560px]:px-2.5 max-[560px]:py-1 max-[560px]:text-[11.5px]" id="heroCount" aria-hidden="true"></p>
+          <!-- เส้นคืบหน้าแนบขอบล่างสุด บอกว่าอีกนานแค่ไหนจะเปลี่ยนรูป -->
+          <div class="absolute inset-x-0 bottom-0 h-[3px] bg-white/[.22]" id="heroProgress" aria-hidden="true"><span class="block h-full origin-left scale-x-0 bg-white/90" id="heroBar"></span></div>
+        </section>
+
+        <!-- ===== แมตช์ที่กำลังแข่ง ===== -->
+        <section class="flex flex-col overflow-hidden rounded-lg border border-line bg-surface shadow-panel" aria-labelledby="liveTitle">
+          <div class="flex items-center gap-3 border-b border-line px-5 pt-[15px] pb-[13px] max-[560px]:flex-wrap max-[560px]:gap-y-[9px] max-[560px]:px-4 max-[560px]:pt-3.5 max-[560px]:pb-3">
+            <h2 class="m-0 font-display text-[17px] font-normal text-fg" id="liveTitle">กำลังแข่งขัน</h2>
+            <span class="inline-flex items-center gap-1.5 rounded-full bg-live-bg px-[11px] py-1 text-[11.5px] text-live" id="liveFlag" hidden><span class="size-1.5 flex-none rounded-full bg-current motion-safe:animate-blink" aria-hidden="true"></span>สด</span>
+            <span class="flex-1 max-[560px]:h-0 max-[560px]:basis-full"></span>
+            <a class="inline-flex min-h-[34px] items-center rounded-full border border-line px-[13px] text-[12.5px] whitespace-nowrap text-fg-soft no-underline transition-[border-color,color] duration-150 hover:border-line-strong hover:text-fg focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand" href="matches.html">ดูทั้งหมด</a>
+          </div>
+          <div class="px-5 pt-[18px] pb-5">
+            <div class="grid grid-cols-1 gap-4" id="liveGrid" aria-live="polite"></div>
+          </div>
+        </section>
+
+        <!-- ===== อันดับของโรงเรียนเรา =====
+             หน้าหลักตอบคำถามเดียว "ตอนนี้เราอยู่อันดับไหน" จึงเป็นแถบบรรทัดเดียว
+             ไม่ใช่ตารางอันดับย่อ — ตารางเต็มอยู่หน้า "อันดับเหรียญรางวัล" อยู่แล้ว -->
+        <section class="flex flex-wrap items-center gap-x-[26px] gap-y-3.5 rounded-lg border border-line bg-surface px-6 py-[18px] shadow-panel max-[860px]:gap-x-[18px] max-[860px]:px-[18px] max-[860px]:py-4" id="rankBar" aria-label="อันดับเหรียญรางวัลของโรงเรียนเรา" hidden></section>
+
+        <section class="flex flex-col overflow-hidden rounded-lg border border-line bg-surface shadow-panel">
+          <div class="flex items-center gap-3 border-b border-line px-5 pt-[15px] pb-[13px] max-[560px]:flex-wrap max-[560px]:gap-y-[9px] max-[560px]:px-4 max-[560px]:pt-3.5 max-[560px]:pb-3">
+            <h2 class="m-0 font-display text-[17px] font-normal text-fg">ประกาศผลล่าสุด</h2>
+            <span class="flex-1 max-[560px]:h-0 max-[560px]:basis-full"></span>
+            <a class="inline-flex min-h-[34px] items-center rounded-full border border-line px-[13px] text-[12.5px] whitespace-nowrap text-fg-soft no-underline transition-[border-color,color] duration-150 hover:border-line-strong hover:text-fg focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand" href="matches.html">ดูทั้งหมด</a>
+          </div>
+          <div class="px-5 pt-[18px] pb-5">
+            <div class="flex flex-col" id="timeline"></div>
+          </div>
+        </section>
+
+        <footer class="flex items-center justify-between gap-3 pt-1 text-[12px] text-fg-mute max-[560px]:flex-col max-[560px]:items-start">
+          <span>ข้อมูลเชื่อมต่อจาก Google Sheets ของฝ่ายจัดการแข่งขัน · ผลอัปเดตทันทีเมื่อกรรมการบันทึกคะแนน</span>
+          <span id="metaEdition"></span>
+        </footer>
+      </main>
+    </div>
+  </div>
+
+  <script type="module" src="js/home.js"></script>
+</body>
+</html>
