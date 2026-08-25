@@ -21,9 +21,11 @@
   to = "/.netlify/functions/dashboard"
   status = 200
 
+# Netlify ไม่แทนค่า placeholder ลงใน query string ของ to (ลองแล้วได้ id ว่าง)
+# จึงส่งต่อเป็น path แล้วให้ function อ่านส่วนท้ายของ path เอาเอง
 [[redirects]]
-  from = "/api/photo/:id"
-  to = "/.netlify/functions/photo?id=:id"
+  from = "/api/photo/*"
+  to = "/.netlify/functions/photo/:splat"
   status = 200
 
 [[redirects]]

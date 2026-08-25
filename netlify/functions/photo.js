@@ -1,13 +1,21 @@
 /**
  * netlify/functions/photo.js — /api/photo/:id เวอร์ชัน serverless
- * netlify.toml แปลง /api/photo/:id เป็น ?id=... ให้ก่อน (function อ่าน path param เองไม่ได้)
+ * รหัสไฟล์ส่งมาเป็นส่วนท้ายของ path (/api/photo/<id> → ถูก rewrite เป็น .../photo/<id>)
+ * เผื่อกรณีเรียก function ตรง ๆ ก็รับแบบ ?id=<id> ด้วย
  * รูปเป็นไบนารี จึงต้องส่งกลับเป็น base64 พร้อม isBase64Encoded ตามรูปแบบของ Netlify
  */
 
 const { fetchPhoto, isPhotoId } = require('../../lib/dashboard');
 
+/** ดึงรหัสไฟล์จาก event: ?id=... มาก่อน ไม่มีก็เอาส่วนท้ายสุดของ path */
+function photoIdOf(event) {
+  const q = ((event && event.queryStringParameters) || {}).id;
+  if (q) return q;
+  return String((event && event.path) || '').split('/').filter(Boolean).pop() || '';
+}
+
 exports.handler = async (event) => {
-  const id = ((event && event.queryStringParameters) || {}).id || '';
+  const id = photoIdOf(event);
   if (!isPhotoId(id)) {
     return {
       statusCode: 400,
