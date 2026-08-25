@@ -1,0 +1,295 @@
+{
+  "meta": {
+    "title": "กีฬาสาธิตสามัคคี 2569",
+    "subtitle": "การแข่งขันกีฬานักเรียนสาธิตสัมพันธ์ · ครั้งที่ 12",
+    "edition": "จามจุรีเกมส์ 2569"
+  },
+  "school": {
+    "id": "patumwan",
+    "abbr": "ปทว.",
+    "name": "สาธิตปทุมวัน",
+    "fullName": "โรงเรียนสาธิตมหาวิทยาลัยศรีนครินทรวิโรฒ ปทุมวัน",
+    "logo": "assets/school/ปทว.png",
+    "rank": 2,
+    "totalSchools": 16
+  },
+  "trend": {
+    "labels": ["20 ก.ค.", "21", "22", "23", "24", "วันนี้"],
+    "self":   [2, 5, 8, 11, 14, 16],
+    "leader": [3, 6, 9, 12, 15, 17]
+  },
+  "leaderName": "สาธิตจุฬาฯ",
+  "sports": [
+    { "id": "athletics",     "name": "กรีฑา",             "status": "done",     "gold": 3, "silver": 2, "bronze": 1 },
+    { "id": "golf",          "name": "กอล์ฟ",             "status": "done",     "gold": 1, "silver": 0, "bronze": 1 },
+    { "id": "tennis",        "name": "เทนนิส",            "status": "upcoming", "gold": 0, "silver": 0, "bronze": 0 },
+    { "id": "tabletennis",   "name": "เทเบิลเทนนิส",      "status": "upcoming", "gold": 0, "silver": 1, "bronze": 0 },
+    { "id": "basketball",    "name": "บาสเกตบอล",         "status": "upcoming", "gold": 0, "silver": 1, "bronze": 0 },
+    { "id": "basketball3x3", "name": "บาสเกตบอล 3X3",     "status": "upcoming", "gold": 0, "silver": 0, "bronze": 0 },
+    { "id": "badminton",     "name": "แบดมินตัน",         "status": "live",     "gold": 1, "silver": 1, "bronze": 0 },
+    { "id": "petanque",      "name": "เปตอง",             "status": "upcoming", "gold": 0, "silver": 0, "bronze": 0 },
+    { "id": "football",      "name": "ฟุตบอล",            "status": "live",     "gold": 0, "silver": 0, "bronze": 0 },
+    { "id": "dancesport",    "name": "ลีลาศ",             "status": "done",     "gold": 1, "silver": 1, "bronze": 0 },
+    { "id": "swimming",      "name": "ว่ายน้ำ",           "status": "done",     "gold": 0, "silver": 1, "bronze": 0 },
+    { "id": "boardgame",     "name": "หมากกระดาน",        "status": "done",     "gold": 0, "silver": 0, "bronze": 1 },
+    { "id": "handball",      "name": "แฮนด์บอล",          "status": "upcoming", "gold": 0, "silver": 0, "bronze": 0 },
+    { "id": "volleyball",    "name": "วอลเลย์บอล",        "status": "live",     "gold": 0, "silver": 0, "bronze": 0 }
+  ],
+  "medalTable": [
+    { "rank": 1,  "abbr": "จฬม.",   "school": "สาธิตจุฬาฯ",           "fullName": "โรงเรียนสาธิตจุฬาลงกรณ์มหาวิทยาลัย ฝ่ายมัธยม",                       "logo": "assets/school/จฬม.png", "isSelf": false, "gold": 8, "silver": 5, "bronze": 4, "trend": "same" },
+    { "rank": 2,  "abbr": "ปทว.",   "school": "สาธิตปทุมวัน",         "fullName": "โรงเรียนสาธิตมหาวิทยาลัยศรีนครินทรวิโรฒ ปทุมวัน",                    "logo": "assets/school/ปทว.png", "isSelf": true,  "gold": 6, "silver": 7, "bronze": 3, "trend": "up" },
+    { "rank": 3,  "abbr": "สมก.",   "school": "สาธิตเกษตร บางเขน",    "fullName": "โรงเรียนสาธิตแห่งมหาวิทยาลัยเกษตรศาสตร์ ศูนย์วิจัยและพัฒนาการศึกษา", "logo": "assets/school/สมก.png", "isSelf": false, "gold": 5, "silver": 4, "bronze": 6, "trend": "down" },
+    { "rank": 4,  "abbr": "สปม.",   "school": "สาธิตประสานมิตร",      "fullName": "โรงเรียนสาธิตมหาวิทยาลัยศรีนครินทรวิโรฒ ประสานมิตร (ฝ่ายมัธยม)",     "logo": "assets/school/สปม.png", "isSelf": false, "gold": 4, "silver": 6, "bronze": 5, "trend": "same" },
+    { "rank": 5,  "abbr": "สธ.มร.", "school": "สาธิตรามคำแหง",        "fullName": "โรงเรียนสาธิตมหาวิทยาลัยรามคำแหง (ฝ่ายมัธยม)",                       "logo": "assets/school/สธ.มร.png", "isSelf": false, "gold": 4, "silver": 3, "bronze": 4, "trend": "up" },
+    { "rank": 6,  "abbr": "มศก.",   "school": "สาธิตศิลปากร",         "fullName": "โรงเรียนสาธิตมหาวิทยาลัยศิลปากร",                                    "logo": "assets/school/มศก.png", "isSelf": false, "gold": 3, "silver": 2, "bronze": 3, "trend": "down" },
+    { "rank": 7,  "abbr": "พมบ.",   "school": "สาธิตพิบูลบำเพ็ญ",     "fullName": "โรงเรียนสาธิต พิบูลบำเพ็ญ มหาวิทยาลัยบูรพา",                         "logo": "assets/school/พมบ.png", "isSelf": false, "gold": 3, "silver": 1, "bronze": 4, "trend": "same" },
+    { "rank": 8,  "abbr": "สมช.",   "school": "สาธิตเชียงใหม่",       "fullName": "โรงเรียนสาธิตมหาวิทยาลัยเชียงใหม่",                                  "logo": "assets/school/สมช.png", "isSelf": false, "gold": 2, "silver": 4, "bronze": 2, "trend": "up" },
+    { "rank": 9,  "abbr": "สมข.",   "school": "สาธิตขอนแก่น",         "fullName": "โรงเรียนสาธิตมหาวิทยาลัยขอนแก่น (ศึกษาศาสตร์)",                      "logo": "assets/school/สมข.png", "isSelf": false, "gold": 2, "silver": 2, "bronze": 3, "trend": "same" },
+    { "rank": 10, "abbr": "ปมอ.",   "school": "สาธิตปัตตานี",         "fullName": "โรงเรียนสาธิตมหาวิทยาลัยสงขลานครินทร์ วิทยาเขตปัตตานี",              "logo": "assets/school/ปมอ.png", "isSelf": false, "gold": 2, "silver": 1, "bronze": 1, "trend": "down" },
+    { "rank": 11, "abbr": "กพส.",   "school": "สาธิตเกษตร กำแพงแสน",  "fullName": "โรงเรียนสาธิตแห่งมหาวิทยาลัยเกษตรศาสตร์ วิทยาเขตกำแพงแสน",           "logo": "assets/school/กพส.png", "isSelf": false, "gold": 1, "silver": 3, "bronze": 2, "trend": "up" },
+    { "rank": 12, "abbr": "สอร.",   "school": "สาธิตองครักษ์",        "fullName": "โรงเรียนสาธิตมหาวิทยาลัยศรีนครินทรวิโรฒ องครักษ์",                   "logo": "assets/school/สอร.png", "isSelf": false, "gold": 1, "silver": 2, "bronze": 4, "trend": "same" },
+    { "rank": 13, "abbr": "สมน.",   "school": "สาธิตนเรศวร",          "fullName": "โรงเรียนมัธยมสาธิตมหาวิทยาลัยนเรศวร",                                "logo": "assets/school/สมน.png", "isSelf": false, "gold": 1, "silver": 1, "bronze": 2, "trend": "down" },
+    { "rank": 14, "abbr": "สมพ.",   "school": "สาธิตพะเยา",           "fullName": "โรงเรียนสาธิตมหาวิทยาลัยพะเยา",                                      "logo": "assets/school/สมพ.png", "isSelf": false, "gold": 1, "silver": 0, "bronze": 3, "trend": "same" },
+    { "rank": 15, "abbr": "สมค.",   "school": "สาธิตมหาสารคาม",       "fullName": "โรงเรียนสาธิตมหาวิทยาลัยมหาสารคาม (ฝ่ายมัธยม)",                      "logo": "assets/school/สมค.png", "isSelf": false, "gold": 0, "silver": 2, "bronze": 2, "trend": "up" },
+    { "rank": 16, "abbr": "มข.นค.", "school": "สาธิตขอนแก่น หนองคาย", "fullName": "โรงเรียนสาธิตมหาวิทยาลัยขอนแก่น วิทยาเขตหนองคาย",                    "logo": "assets/school/มข.นค.png", "isSelf": false, "gold": 0, "silver": 1, "bronze": 1, "trend": "down" }
+  ],
+  "photos": [
+    { "id": "d1-football",   "dayId": 1, "sportId": "football",   "time": "10:30", "caption": "ฟุตบอลชาย รอบคัดเลือก สาย A",       "venue": "สนามฟุตบอล",   "credit": "ฝ่ายประชาสัมพันธ์", "src": "assets/photos/day1-football.svg" },
+    { "id": "d1-volleyball", "dayId": 1, "sportId": "volleyball", "time": "10:00", "caption": "วอลเลย์บอลหญิง รอบรองชนะเลิศ",     "venue": "โรงยิม 1",     "credit": "ฝ่ายประชาสัมพันธ์", "src": "assets/photos/day1-volleyball.svg" },
+    { "id": "d1-athletics",  "dayId": 1, "sportId": "athletics",  "time": "08:30", "caption": "กรีฑา 100 เมตร รอบชิงชนะเลิศ",     "venue": "สนามกีฬากลาง", "credit": "ชมรมถ่ายภาพ",      "src": "assets/photos/day1-athletics.svg" },
+    { "id": "d1-swimming",   "dayId": 1, "sportId": "swimming",   "time": "09:00", "caption": "ว่ายน้ำฟรีสไตล์ 50 เมตร ชิงชนะเลิศ", "venue": "สระว่ายน้ำ",   "credit": "ชมรมถ่ายภาพ",      "src": "assets/photos/day1-swimming.svg" },
+    { "id": "d1-dancesport", "dayId": 1, "sportId": "dancesport", "time": "09:30", "caption": "ลีลาศ ประเภทมาตรฐาน ชิงชนะเลิศ",   "venue": "หอประชุมใหญ่", "credit": "ฝ่ายประชาสัมพันธ์", "src": "assets/photos/day1-dancesport.svg" }
+  ],
+  "schedule": [
+    {
+      "id": 1,
+      "weekday": "พฤหัสบดี",
+      "date": "24 ก.ค.",
+      "note": "วันเปิดการแข่งขัน",
+      "items": [
+        {
+          "time": "08:30",
+          "sportId": "athletics",
+          "event": "กรีฑา 100 เมตร รอบชิงชนะเลิศ",
+          "teams": "รวมทุกโรงเรียน",
+          "status": "upcoming",
+          "score": ""
+        },
+        {
+          "time": "09:00",
+          "sportId": "swimming",
+          "event": "ว่ายน้ำฟรีสไตล์ 50 เมตร ชิงชนะเลิศ",
+          "teams": "รวมทุกโรงเรียน",
+          "status": "upcoming",
+          "score": ""
+        },
+        {
+          "time": "09:30",
+          "sportId": "dancesport",
+          "event": "ลีลาศ ประเภทมาตรฐาน ชิงชนะเลิศ",
+          "teams": "รวมทุกโรงเรียน",
+          "status": "upcoming",
+          "score": ""
+        },
+        {
+          "time": "10:00",
+          "sportId": "volleyball",
+          "event": "วอลเลย์บอลหญิง รอบรองชนะเลิศ",
+          "teams": "ปทุมวัน (เรา) พบ สาธิตจุฬาฯ",
+          "status": "upcoming",
+          "score": ""
+        },
+        {
+          "time": "10:30",
+          "sportId": "football",
+          "event": "ฟุตบอลชาย รอบคัดเลือก สาย A",
+          "teams": "ปทุมวัน (เรา) พบ สาธิตเกษตร บางเขน",
+          "status": "upcoming",
+          "score": ""
+        },
+        {
+          "time": "11:00",
+          "sportId": "badminton",
+          "event": "แบดมินตันคู่ผสม รอบ 8 ทีมสุดท้าย",
+          "teams": "ปทุมวัน (เรา) พบ สาธิตประสานมิตร",
+          "status": "upcoming",
+          "score": ""
+        },
+        {
+          "time": "13:00",
+          "sportId": "golf",
+          "event": "กอล์ฟ สโตรกเพลย์ วันที่ 1",
+          "teams": "รวมทุกโรงเรียน",
+          "status": "upcoming",
+          "score": ""
+        },
+        {
+          "time": "14:30",
+          "sportId": "boardgame",
+          "event": "หมากกระดาน (หมากรุกไทย) ชิงชนะเลิศ",
+          "teams": "รวมทุกโรงเรียน",
+          "status": "upcoming",
+          "score": ""
+        }
+      ]
+    },
+    {
+      "id": 2,
+      "weekday": "ศุกร์",
+      "date": "25 ก.ค.",
+      "note": "วันแข่งขันหลัก",
+      "items": [
+        {
+          "time": "08:00",
+          "sportId": "athletics",
+          "event": "กรีฑา 4×100 ม. ผลัด ชิงชนะเลิศ",
+          "teams": "รวมทุกโรงเรียน",
+          "status": "upcoming",
+          "score": ""
+        },
+        {
+          "time": "09:00",
+          "sportId": "tennis",
+          "event": "เทนนิสเดี่ยวชาย รอบก่อนรองชนะเลิศ",
+          "teams": "ปทุมวัน (เรา) พบ สาธิตรามคำแหง",
+          "status": "upcoming",
+          "score": ""
+        },
+        {
+          "time": "09:30",
+          "sportId": "tabletennis",
+          "event": "เทเบิลเทนนิสทีมหญิง รอบรองชนะเลิศ",
+          "teams": "ปทุมวัน (เรา) พบ สาธิตจุฬาฯ",
+          "status": "upcoming",
+          "score": ""
+        },
+        {
+          "time": "10:30",
+          "sportId": "basketball3x3",
+          "event": "บาสเกตบอล 3X3 ชาย รอบแบ่งกลุ่ม",
+          "teams": "ปทุมวัน (เรา) พบ สาธิตเกษตร กำแพงแสน",
+          "status": "upcoming",
+          "score": ""
+        },
+        {
+          "time": "11:30",
+          "sportId": "handball",
+          "event": "แฮนด์บอลหญิง รอบคัดเลือก",
+          "teams": "ปทุมวัน (เรา) พบ สาธิตองครักษ์",
+          "status": "upcoming",
+          "score": ""
+        },
+        {
+          "time": "13:30",
+          "sportId": "football",
+          "event": "ฟุตบอลชาย รอบรองชนะเลิศ",
+          "teams": "ผู้ชนะสาย A พบ ผู้ชนะสาย B",
+          "status": "upcoming",
+          "score": ""
+        },
+        {
+          "time": "15:00",
+          "sportId": "volleyball",
+          "event": "วอลเลย์บอลหญิง ชิงชนะเลิศ",
+          "teams": "รอผลรอบรองชนะเลิศ",
+          "status": "upcoming",
+          "score": ""
+        }
+      ]
+    },
+    {
+      "id": 3,
+      "weekday": "เสาร์",
+      "date": "26 ก.ค.",
+      "note": "วันชิงชนะเลิศและปิดการแข่งขัน",
+      "items": [
+        {
+          "time": "09:00",
+          "sportId": "athletics",
+          "event": "กรีฑาประเภทลู่ ชิงชนะเลิศทุกรุ่น",
+          "teams": "รวมทุกโรงเรียน",
+          "status": "upcoming",
+          "score": ""
+        },
+        {
+          "time": "10:00",
+          "sportId": "basketball",
+          "event": "บาสเกตบอลชาย ชิงชนะเลิศ",
+          "teams": "รอผลรอบรองชนะเลิศ",
+          "status": "upcoming",
+          "score": ""
+        },
+        {
+          "time": "11:00",
+          "sportId": "tennis",
+          "event": "เทนนิสเดี่ยวชาย ชิงชนะเลิศ",
+          "teams": "รอผลรอบรองชนะเลิศ",
+          "status": "upcoming",
+          "score": ""
+        },
+        {
+          "time": "13:00",
+          "sportId": "petanque",
+          "event": "เปตองทีมผสม ชิงชนะเลิศ",
+          "teams": "รอผลรอบแบ่งกลุ่ม",
+          "status": "upcoming",
+          "score": ""
+        },
+        {
+          "time": "16:30",
+          "sportId": "",
+          "event": "พิธีมอบรางวัลและปิดการแข่งขัน",
+          "teams": "ทุกโรงเรียน",
+          "status": "upcoming",
+          "score": ""
+        }
+      ]
+    }
+  ],
+  "days": [
+    {
+      "id": 1,
+      "weekday": "พฤหัสบดี",
+      "date": "24 ก.ค.",
+      "note": "วันเปิดการแข่งขัน",
+      "items": [
+        { "time": "08:30", "sportId": "athletics",   "event": "กรีฑา 100 เมตร รอบชิงชนะเลิศ",        "venue": "สนามกีฬากลาง",   "teams": "รวมทุกโรงเรียน",                        "status": "done",     "score": "ทอง: ปทุมวัน" },
+        { "time": "09:00", "sportId": "swimming",     "event": "ว่ายน้ำฟรีสไตล์ 50 เมตร ชิงชนะเลิศ",  "venue": "สระว่ายน้ำ",     "teams": "รวมทุกโรงเรียน",                        "status": "done",     "score": "เงิน: ปทุมวัน" },
+        { "time": "09:30", "sportId": "dancesport",   "event": "ลีลาศ ประเภทมาตรฐาน ชิงชนะเลิศ",      "venue": "หอประชุมใหญ่",   "teams": "รวมทุกโรงเรียน",                        "status": "done",     "score": "ทอง: ปทุมวัน" },
+        { "time": "10:00", "sportId": "volleyball",   "event": "วอลเลย์บอลหญิง รอบรองชนะเลิศ",         "venue": "โรงยิม 1",       "teams": "ปทุมวัน (เรา) พบ สาธิตจุฬาฯ",       "status": "live",     "score": "2 – 1" },
+        { "time": "10:30", "sportId": "football",     "event": "ฟุตบอลชาย รอบคัดเลือก สาย A",         "venue": "สนามฟุตบอล",     "teams": "ปทุมวัน (เรา) พบ สาธิตเกษตร บางเขน", "status": "live",     "score": "1 – 0" },
+        { "time": "11:00", "sportId": "badminton",    "event": "แบดมินตันคู่ผสม รอบ 8 ทีมสุดท้าย",    "venue": "โรงยิม 3",       "teams": "ปทุมวัน (เรา) พบ สาธิตประสานมิตร",      "status": "live",     "score": "1 – 0" },
+        { "time": "13:00", "sportId": "golf",         "event": "กอล์ฟ สโตรกเพลย์ วันที่ 1",           "venue": "สนามกอล์ฟราชพฤกษ์","teams": "รวมทุกโรงเรียน",                       "status": "upcoming", "score": "" },
+        { "time": "14:30", "sportId": "boardgame",    "event": "หมากกระดาน (หมากรุกไทย) ชิงชนะเลิศ",   "venue": "อาคารเรียนรวม",   "teams": "รวมทุกโรงเรียน",                        "status": "upcoming", "score": "" }
+      ]
+    },
+    {
+      "id": 2,
+      "weekday": "ศุกร์",
+      "date": "25 ก.ค.",
+      "note": "วันแข่งขันหลัก",
+      "items": [
+        { "time": "08:00", "sportId": "athletics",     "event": "กรีฑา 4×100 ม. ผลัด ชิงชนะเลิศ",     "venue": "สนามกีฬากลาง", "teams": "รวมทุกโรงเรียน",                     "status": "upcoming", "score": "" },
+        { "time": "09:00", "sportId": "tennis",        "event": "เทนนิสเดี่ยวชาย รอบก่อนรองชนะเลิศ",   "venue": "คอร์ทเทนนิส",   "teams": "ปทุมวัน (เรา) พบ สาธิตรามคำแหง",     "status": "upcoming", "score": "" },
+        { "time": "09:30", "sportId": "tabletennis",   "event": "เทเบิลเทนนิสทีมหญิง รอบรองชนะเลิศ",   "venue": "โรงยิม 3",     "teams": "ปทุมวัน (เรา) พบ สาธิตจุฬาฯ",     "status": "upcoming", "score": "" },
+        { "time": "10:30", "sportId": "basketball3x3", "event": "บาสเกตบอล 3X3 ชาย รอบแบ่งกลุ่ม",     "venue": "ลานอเนกประสงค์","teams": "ปทุมวัน (เรา) พบ สาธิตเกษตร กำแพงแสน", "status": "upcoming", "score": "" },
+        { "time": "11:30", "sportId": "handball",      "event": "แฮนด์บอลหญิง รอบคัดเลือก",           "venue": "โรงยิม 2",     "teams": "ปทุมวัน (เรา) พบ สาธิตองครักษ์",       "status": "upcoming", "score": "" },
+        { "time": "13:30", "sportId": "football",      "event": "ฟุตบอลชาย รอบรองชนะเลิศ",            "venue": "สนามฟุตบอล",   "teams": "ผู้ชนะสาย A พบ ผู้ชนะสาย B",         "status": "upcoming", "score": "" },
+        { "time": "15:00", "sportId": "volleyball",    "event": "วอลเลย์บอลหญิง ชิงชนะเลิศ",          "venue": "โรงยิม 1",     "teams": "รอผลรอบรองชนะเลิศ",                  "status": "upcoming", "score": "" }
+      ]
+    },
+    {
+      "id": 3,
+      "weekday": "เสาร์",
+      "date": "26 ก.ค.",
+      "note": "วันชิงชนะเลิศและปิดการแข่งขัน",
+      "items": [
+        { "time": "09:00", "sportId": "athletics",     "event": "กรีฑาประเภทลู่ ชิงชนะเลิศทุกรุ่น",   "venue": "สนามกีฬากลาง",  "teams": "รวมทุกโรงเรียน",                    "status": "upcoming", "score": "" },
+        { "time": "10:00", "sportId": "basketball",    "event": "บาสเกตบอลชาย ชิงชนะเลิศ",           "venue": "โรงยิม 2",      "teams": "รอผลรอบรองชนะเลิศ",                 "status": "upcoming", "score": "" },
+        { "time": "11:00", "sportId": "tennis",        "event": "เทนนิสเดี่ยวชาย ชิงชนะเลิศ",         "venue": "คอร์ทเทนนิส",    "teams": "รอผลรอบรองชนะเลิศ",                 "status": "upcoming", "score": "" },
+        { "time": "13:00", "sportId": "petanque",      "event": "เปตองทีมผสม ชิงชนะเลิศ",           "venue": "ลานเปตอง",      "teams": "รอผลรอบแบ่งกลุ่ม",                  "status": "upcoming", "score": "" },
+        { "time": "16:30", "sportId": "",              "event": "พิธีมอบรางวัลและปิดการแข่งขัน",     "venue": "เวทีกลาง",      "teams": "ทุกโรงเรียน",                       "status": "upcoming", "score": "" }
+      ]
+    }
+  ]
+}

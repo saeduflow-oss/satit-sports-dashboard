@@ -7,18 +7,24 @@
 
 ```
 กีฬาสาธิต/
-├── package.json          # กำหนด dependency (express) และคำสั่งรัน
-├── server.js             # เว็บเซิร์ฟเวอร์ Node.js + API /api/dashboard
+├── package.json          # dependency (express) และคำสั่งรัน/build
+├── netlify.toml          # ตั้งค่า deploy บน Netlify (publish = public/, API = function)
+├── server.js             # เปลือก HTTP: เสิร์ฟ public/ + เส้นทาง /api/* (ใช้ตอนรันเอง)
+├── lib/
+│   └── dashboard.js      # ตรรกะทั้งหมด: ดึง Google Sheets → JSON + พร็อกซีรูป Drive
+├── netlify/functions/    # API เวอร์ชัน serverless (ห่อ lib/dashboard.js อีกที)
+│   ├── dashboard.js      # → /api/dashboard
+│   ├── photo.js          # → /api/photo/:id
+│   └── health.js         # → /api/health
+├── src/input.css         # ต้นทาง Tailwind (คอมไพล์เป็น public/css/app.css)
+├── fonts/                # ฟอนต์ต้นฉบับ (build ก๊อปเข้า public/fonts/)
 ├── data/
-│   └── mock.json         # ข้อมูลตัวอย่าง (แทนที่ด้วย Google Sheets ภายหลัง)
-└── public/               # ไฟล์ฝั่งหน้าเว็บทั้งหมด
-    ├── index.html        # โครงหน้า (โครงสร้าง HTML)
-    ├── css/
-    │   └── styles.css    # ธีม โทนสี เลย์เอาต์ (แยกชัดเจน)
-    ├── js/
-    │   └── app.js        # ตรรกะ: โหลดข้อมูล, render, สลับวัน/ธีม
-    └── assets/
-        └── icons/        # ไอคอนกีฬา 15 ชนิด (ไฟล์ .svg แยกต่อกีฬา)
+│   └── mock.json         # ข้อมูลสำรอง ใช้เมื่อต่อ Google Sheets ไม่ได้
+└── public/               # รากของเว็บที่ถูก deploy — ไฟล์ฝั่งหน้าเว็บทั้งหมด
+    ├── index.html        # หน้าหลัก (มี matches / medals / schedule / school / sports)
+    ├── css/app.css       # CSS ที่ Tailwind สร้าง (commit ขึ้น repo ด้วย)
+    ├── js/               # ตรรกะฝั่งหน้าเว็บ แยกไฟล์ตามหน้า + common.js
+    └── assets/           # ไอคอนกีฬา / โลโก้ / ภาพ
 ```
 
 ## วิธีรัน
@@ -34,13 +40,34 @@ npm start
 > เพราะ `fetch` จะถูกบล็อกโดย browser) — ถ้าจำเป็น หน้าเว็บมี fallback
 > อ่าน `data/mock.json` ให้อัตโนมัติ
 
+## Deploy ขึ้น Netlify
+
+push ขึ้น GitHub แล้ว Netlify จะ build ให้เองตาม `netlify.toml` ไม่ต้องตั้งค่าใน UI
+
+สองจุดที่ต้องเข้าใจ ไม่งั้นเว็บจะขึ้น **Page not found**:
+
+1. **รากของเว็บคือ `public/` ไม่ใช่รากของ repo** — ตั้งไว้ที่ `publish = "public"`
+   (ถ้าไม่ตั้ง Netlify จะเผยแพร่รากของ repo ซึ่งไม่มี `index.html` → 404 ทุกหน้า
+   แถมยังเปิดให้คนนอกโหลด `server.js` / `package.json` ได้ด้วย)
+2. **Netlify ไม่รัน Express ให้** — `/api/*` จึงวิ่งเข้า `netlify/functions/` แทน
+   ผ่าน redirect ใน `netlify.toml` โดยใช้ตรรกะเดียวกับตอนรันเองใน `lib/dashboard.js`
+
+คำสั่ง build คือ `npm run build` = คอมไพล์ Tailwind + ก๊อป `fonts/` กับ
+`data/mock.json` เข้า `public/` (ทั้งสองอย่างอยู่นอก `public/` จึงไม่ถูก deploy เอง)
+
+เช็กหลัง deploy: เปิด `/api/health` ต้องได้ `{"ok":true}` — ถ้าไม่ได้แปลว่า
+function ไม่ถูก build ให้ดู log ที่แท็บ Deploys ของ Netlify
+
+> รันบนโฮสต์ที่รัน Node ได้ (Render / Railway / เครื่องตัวเอง) ก็ยังใช้ `npm start`
+> ได้เหมือนเดิม — `server.js` กับ function ใช้ `lib/dashboard.js` ตัวเดียวกัน
+
 ## กีฬาที่รองรับ (14 ชนิด)
 
 กรีฑา · กอล์ฟ · เทนนิส · เทเบิลเทนนิส · บาสเกตบอล · บาสเกตบอล 3X3 ·
 แบดมินตัน · เปตอง · ฟุตบอล · ลีลาศ · ว่ายน้ำ · หมากกระดาน · แฮนด์บอล ·
 วอลเลย์บอล
 
-กีฬาที่ไม่ได้ส่งแข่งอยู่ในลิสต์ `SPORTS_NOT_ENTERED` ใน `server.js` (ตอนนี้คือ **อีสปอร์ต**)
+กีฬาที่ไม่ได้ส่งแข่งอยู่ในลิสต์ `SPORTS_NOT_ENTERED` ใน `lib/dashboard.js` (ตอนนี้คือ **อีสปอร์ต**)
 แถวของกีฬาในลิสต์นี้จะถูกตัดออกทั้งหน้าชนิดกีฬาและตารางแข่งขัน แม้ในชีตจะยังมีอยู่
 ถ้าปีไหนกลับมาส่งแข่ง ให้เอาชื่อออกจากลิสต์นั้นและใส่ชื่อกลับเข้า `SPORT_IDS`
 
@@ -53,7 +80,7 @@ npm start
 - **ตารางแข่งขันรายวัน** — ไทม์ไลน์เรียงตามเวลา พร้อมไอคอนกีฬาและสถานที่
 - **ตารางการแข่งขัน** (`schedule.html`) — ผังกำหนดการทั้งรายการ แยกพาเนลต่อวัน
   ไม่แบ่งหน้าและไม่ตัดข้อมูล ใช้เป็นผังอ้างอิง อ่านจากแท็บ **"ตารางการแข่งขัน"**
-  ในชีต (`GID_SCHEDULE_PLAN` ใน `server.js`) คอลัมน์: วันที่ / กีฬา / ประเภท / เวลา /
+  ในชีต (`GID_SCHEDULE_PLAN` ใน `lib/dashboard.js`) คอลัมน์: วันที่ / กีฬา / ประเภท / เวลา /
   ทีม A / VS / ทีม B — แท็บนี้ไม่มีช่องผลกับสถานะ หน้านี้จึงไม่มีคอลัมน์ผล/สถานะ
   (ผลอยู่ที่หน้า "ตารางแข่งขัน" ซึ่งอ่านจากแท็บ "ผลการแข่งขันประจำวัน")
 - **ตารางเหรียญ** — จัดอันดับอัตโนมัติ ไฮไลต์โรงเรียนเรา และลูกศรบอกทิศทางอันดับ
@@ -80,7 +107,7 @@ npm start
 | วันที่ | กีฬา | เวลา | คำบรรยาย | สถานที่ | ลิงก์รูป | เครดิต |
 |---|---|---|---|---|---|---|
 
-แล้วใส่ `gid` ของแท็บนั้นที่ค่า `GID_PHOTOS` ใน `server.js` (ค่าว่าง = ยังไม่เปิดใช้)
+แล้วใส่ `gid` ของแท็บนั้นที่ค่า `GID_PHOTOS` ใน `lib/dashboard.js` (ค่าว่าง = ยังไม่เปิดใช้)
 ลิงก์แชร์จาก Google Drive ใส่ได้เลย เซิร์ฟเวอร์แปลงเป็นลิงก์รูปตรงให้เอง
 วันที่ในแท็บนี้ต้องตรงกับวันในตารางแข่งขัน ไม่งั้นภาพนั้นจะถูกข้าม
 ถ้าอ่านแท็บนี้ไม่สำเร็จ ส่วนอื่นของแดชบอร์ดยังทำงานตามปกติ
@@ -103,7 +130,7 @@ swimming, boardgame, handball, volleyball`
 
 ## ต่อ Google Sheets จริง
 
-แก้เฉพาะฟังก์ชัน `loadData()` ใน `server.js` (มีคอมเมนต์แนะนำ 2 วิธีไว้ในไฟล์):
+แก้เฉพาะฟังก์ชัน `loadData()` ใน `lib/dashboard.js` (มีคอมเมนต์แนะนำ 2 วิธีไว้ในไฟล์):
 
 - **วิธี A — Google Sheets API v4** (`npm i googleapis` + Service Account)
 - **วิธี B — Apps Script Web App** (เผยแพร่ชีตเป็น JSON endpoint แล้ว fetch)

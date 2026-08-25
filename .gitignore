@@ -5,3 +5,6 @@ node_modules/
 # public/css/app.css เป็นไฟล์ที่ Tailwind สร้างจาก src/input.css แต่ "ต้อง commit ขึ้น repo"
 # เพราะทุกหน้า <link> ถึงไฟล์นี้ตรง ๆ ถ้าไม่มีใน repo หน้าเว็บบน Vercel จะโหลด CSS ไม่เจอ
 # แก้สไตล์แล้วอย่าลืม `npm run build:css` แล้ว commit ไฟล์นี้ไปด้วย
+
+# public/fonts/ กับ public/data/ เป็นสำเนาที่ `npm run build:assets` ก๊อปมาจากราก repo
+# (ต้นฉบับอยู่ที่ fonts/ และ data/) — commit ไว้ด้วย เผื่อ build บนโฮสต์ล้มจะได้ยังมีไฟล์ใช้
