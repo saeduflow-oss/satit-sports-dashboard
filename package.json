@@ -6,6 +6,7 @@
   "main": "server.js",
   "scripts": {
     "build:css": "tailwindcss -i src/input.css -o public/css/app.css --minify",
+    "build": "npm run build:css",
     "dev:css": "tailwindcss -i src/input.css -o public/css/app.css --watch",
     "prestart": "npm run build:css",
     "start": "node server.js",
