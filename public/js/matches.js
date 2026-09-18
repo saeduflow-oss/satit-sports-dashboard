@@ -1,13 +1,18 @@
 import {
-  el, esc, loadData, schedulePolling, allMatches, sportIcon, statusChip, initChrome,
-  schoolCores, matchScore, dayLabel, eventParts, paintUiIcons, showLoadError
+  el, esc, loadData, schedulePolling, allMatches, sportIcon, statusChip, initChrome, CHIP,
+  schoolCores, matchScore, dayLabel, eventParts, paintUiIcons, showLoadError,
+  teamSides, splitScore, schoolByText, schoolCrest
 } from './common.js';
 
-/* ตารางแข่งขันมีผลกับสถานะเพิ่มมาสองช่อง ใช้โครงแถวเดียวกับผังกำหนดการ (schedule.js)
-   เพื่อให้สองหน้าอ่านเป็นระบบเดียวกัน ไม่ใช่การ์ดคนละแบบ
-   จอแคบ: เวลาอยู่ซ้ายคงที่ กีฬากับคู่แข่งเรียงลงสองบรรทัด */
-var ST_GRID = 'grid grid-cols-[60px_minmax(0,1.4fr)_minmax(0,1.25fr)_92px_108px] items-center gap-4 px-5' +
-  ' max-[860px]:grid-cols-[58px_minmax(0,1fr)_auto] max-[860px]:gap-x-3 max-[860px]:gap-y-[3px] max-[860px]:px-4';
+/* ใช้โครงแถวเดียวกับผังกำหนดการ (schedule.js) เพื่อให้สองหน้าอ่านเป็นระบบเดียวกัน
+   เดิมแยก "ระหว่าง" กับ "ผล" เป็นคนละช่อง คนอ่านเลยต้องเดาเองว่า 1-3 เลขไหนเป็นของใคร
+   ตอนนี้รวมเป็นช่องเดียว บรรทัดละหนึ่งฝ่ายพร้อมเลขของฝ่ายนั้นที่ปลายบรรทัดเดียวกัน
+   จอแคบ: เวลาอยู่ซ้ายคงที่ กีฬา/ผล/สถานะ เรียงลงเป็นสามบรรทัดในคอลัมน์ขวา */
+// ช่องกีฬากับช่องผลแบ่งที่ว่างกันเป็นสัดส่วน ห้ามให้ช่องใดช่องหนึ่งเป็น minmax ที่มีเพดานเป็น px
+// เพราะ grid จะขยายช่องนั้นจนเต็มเพดานก่อน แล้วเหลือให้ 1fr เท่าไรก็เท่านั้น — เคยทำให้ช่องกีฬา
+// เหลือ 0px ที่จอราว 950px จนชื่อกีฬาล้นไปทับช่องผล เพดานความกว้างจึงไปอยู่ที่ "เนื้อใน" ช่องผลแทน
+var ST_GRID = 'grid grid-cols-[60px_minmax(0,1.15fr)_minmax(0,1fr)_120px] items-center gap-4 px-5' +
+  ' max-[1000px]:grid-cols-[58px_minmax(0,1fr)] max-[1000px]:gap-x-3 max-[1000px]:gap-y-[3px] max-[1000px]:px-4';
 
 var DAYTAB = 'flex cursor-pointer items-center gap-[9px] rounded-full border px-4 py-[9px] font-body text-[13px]' +
   ' transition-[border-color,color,background-color] duration-150 focus-visible:outline-2 focus-visible:outline-offset-2' +
@@ -40,6 +45,89 @@ function renderDayTabs() {
   });
 }
 
+/* ---------- หนึ่งบรรทัด = หนึ่งฝ่าย + เลขของฝ่ายนั้น ---------- */
+
+/**
+ * แตก "A พบ B" กับ "1-3" ให้กลายเป็นสองบรรทัดที่จับคู่กันแล้ว
+ * ผลที่ไม่ใช่คู่ตัวเลข (เช่น "ทอง: ปทุมวัน" ของรายการชิงชนะเลิศรวม) แตกไม่ได้
+ * จึงเกาะไว้กับบรรทัดแรกทั้งก้อน ไม่ต้องพยายามหารสองให้มันผิด
+ */
+function resultLines(m) {
+  var sides = teamSides(m.teams);
+  var pair = splitScore(m.score);
+  var live = m.status === 'live';
+
+  if (sides.length >= 2 && pair) {
+    var a = parseInt(pair[0], 10), b = parseInt(pair[1], 10);
+    var known = !isNaN(a) && !isNaN(b) && a !== b;
+    // ฝ่ายชนะเน้นสี ฝ่ายแพ้จาง (ชุดสีเดียวกับการ์ดผลบนหน้าหลัก)
+    // แมตช์สดยังไม่มีผู้ชนะ ตัวเลขสองฝ่ายจึงเป็นสีสถานะเท่ากัน
+    var tone = ['text-fg', 'text-fg'];
+    if (live) tone = ['text-live', 'text-live'];
+    else if (known) tone = a > b ? ['text-brand-strong', 'text-fg-mute'] : ['text-fg-mute', 'text-brand-strong'];
+    return [
+      { side: sides[0], score: pair[0], tone: tone[0], num: true, win: !live && known && a > b },
+      { side: sides[1], score: pair[1], tone: tone[1], num: true, win: !live && known && b > a }
+    ];
+  }
+
+  var tone1 = live ? 'text-live' : 'text-fg';
+  if (!sides.length) return [{ side: '', score: m.score || '', tone: tone1, dash: !m.score }];
+  // บรรทัดกลุ่มนี้ไม่ตั้ง num ผลจึงขึ้นด้วยฟอนต์เนื้อความ ไม่ใช่ฟอนต์ตัวเลข
+  return sides.map(function (side, i) {
+    return { side: side, score: i === 0 ? (m.score || '') : '', tone: tone1, dash: i === 0 && !m.score };
+  });
+}
+
+/**
+ * ฝั่งที่เป็นโรงเรียนเราเน้นที่ "ชื่อ" ไม่ใช่ย้อมทั้งแถว
+ * ของเดิมย้อมแถวเป็นสีฟ้าเมื่อเจอชื่อเรา แต่ในชีตจริงปทุมวันลงแข่งทุกคู่ ตารางเลยฟ้าทั้งใบ
+ * จนไฮไลต์ไม่ได้บอกอะไรเลย — เน้นที่ชื่อยังอ่านออกแม้ทุกแถวจะเป็นแมตช์ของเรา
+ *
+ * ฝ่ายชนะมีคำว่า "ชนะ" กำกับ ไม่ปล่อยให้สีเป็นตัวบอกอย่างเดียว
+ * คนตาบอดสีกับคนที่ฟังด้วย screen reader ต้องได้ข้อมูลเท่ากัน
+ */
+function lineHtml(data, line, cores) {
+  var mine = cores.length > 0 && line.side && matchScore(line.side, cores) > 0;
+  var school = line.side ? schoolByText(data, line.side) : null;
+  // ช่องนี้กรอกเป็นอย่างอื่นที่ไม่ใช่ชื่อโรงเรียนก็ได้ ("รวมทุกโรงเรียน" / "ผู้ชนะสาย A")
+  // ตราปลอมที่เป็นวงกลมตัวอักษรแรกของข้อความพวกนี้อ่านเหมือนตราโรงเรียนที่ไม่มีอยู่จริง
+  // จึงเว้นเป็นช่องว่างขนาดเท่าตราแทน ชื่อทุกบรรทัดในตารางจะได้เริ่มที่ขอบเดียวกัน
+  var crest = school
+    ? schoolCrest(school, 'size-7 text-[11px]')
+    : '<span class="size-7 flex-none" aria-hidden="true"></span>';
+  var name = '<span class="min-w-0 flex-1 text-[13.5px] leading-[1.35] break-words ' +
+    (mine ? 'text-brand-strong' : line.side ? 'text-fg-soft' : 'text-fg-mute') + '">' +
+    esc(line.side || 'รวมทุกโรงเรียน') + '</span>';
+
+  // ผลที่เป็นคู่ตัวเลขใช้ฟอนต์ตัวเลขให้หลักตรงกันทุกแถว ส่วนผลที่เป็นข้อความ ("ทอง: ปทุมวัน")
+  // ใช้ฟอนต์เนื้อความ เพราะฟอนต์ตัวเลขทำให้ภาษาไทยอ่านยากโดยไม่ได้อะไรกลับมา
+  var num = line.score
+    ? (line.win ? '<span class="text-[10.5px] whitespace-nowrap text-fg-mute">ชนะ</span>' : '') +
+      (line.num
+        ? '<span class="font-mono text-[17px] whitespace-nowrap tabular-nums ' + line.tone + '">' + esc(line.score) + '</span>'
+        : '<span class="text-[14px] leading-[1.35] ' + line.tone + '">' + esc(line.score) + '</span>')
+    : (line.dash ? '<span class="text-[13px] text-fg-mute">—</span>' : '');
+
+  return '<span class="flex items-center gap-2.5">' + crest + name +
+    '<span class="flex flex-none items-center gap-1.5">' + num + '</span></span>';
+}
+
+/**
+ * ป้ายสถานะหนึ่งป้ายต่อแถว
+ * ชีตเขียน "ไม่เป็นทางการ" หมายถึงผลเข้ามาแล้วแต่ยังไม่รับรอง ของเดิมแปลงเป็น "ประกาศแล้ว"
+ * แล้วแปะ "ยังไม่เป็นทางการ" ไว้ใต้สกอร์อีกที — สองข้อความนี้ขัดกันเองในแถวเดียว
+ * และรายการที่ยังไม่มีผล ก็ไม่มีผลให้พูดถึงความเป็นทางการตั้งแต่แรก
+ */
+function statusHtml(m) {
+  if (m.unofficial && m.score) {
+    return '<span class="' + CHIP + ' border border-dashed border-line-strong text-fg-soft">ยังไม่เป็นทางการ</span>';
+  }
+  // ป้าย "ประกาศแล้ว" ขึ้นแทบทุกแถว ถ้าเป็นสีเขียวจะกลายเป็นสีตกแต่งเต็มตาราง
+  // สีในตารางนี้เหลือไว้ให้ "กำลังแข่ง" ที่เป็นสิ่งเดียวที่เกิดขึ้นตอนนี้จริง ๆ
+  return statusChip(m.status, m.status === 'done' ? 'bg-surface-soft text-fg-soft' : '');
+}
+
 function renderFixtures() {
   var q = state.tableQuery.trim().toLowerCase();
   var rows = allMatches(state.data).filter(function (m) { return m.day === state.activeDay; });
@@ -55,9 +143,9 @@ function renderFixtures() {
   var pageRows = rows.slice(start, start + state.pageSize);
 
   var host = document.getElementById('fixtureList'); host.innerHTML = '';
-  var thead = el('div', ST_GRID + ' border-b border-line py-2.5 text-[11.5px] text-fg-mute max-[860px]:hidden',
-    '<span>เวลา</span><span>กีฬา / ประเภท</span><span>ระหว่าง</span>' +
-    '<span class="justify-self-end">ผล</span><span class="justify-self-end">สถานะ</span>');
+  var thead = el('div', ST_GRID + ' border-b border-line py-2.5 text-[11.5px] text-fg-mute max-[1000px]:hidden',
+    '<span>เวลา</span><span>กีฬา / ประเภท</span><span>ระหว่าง · ผล</span>' +
+    '<span>สถานะ</span>');
   thead.setAttribute('aria-hidden', 'true');
   host.appendChild(thead);
 
@@ -68,29 +156,18 @@ function renderFixtures() {
     var selfCores = selfRow ? schoolCores(selfRow) : [];
     pageRows.forEach(function (m) {
       var head = eventParts(m.sport, m.event);
-      var live = m.status === 'live';
-      var isSelf = selfCores.length > 0 && matchScore(m.teams || '', selfCores) > 0;
       host.appendChild(el('div',
-        ST_GRID + ' border-b border-line py-[11px] text-[14.5px] last:border-b-0 max-[860px]:py-[13px]' +
-        (isSelf ? ' bg-brand-100' : ''),
-        '<span class="font-mono text-[14px] text-fg-soft tabular-nums max-[860px]:col-start-1 max-[860px]:row-start-1">' + esc(m.time) + '</span>' +
-        '<span class="flex min-w-0 flex-col gap-px max-[860px]:col-start-2 max-[860px]:row-start-1">' +
+        ST_GRID + ' border-b border-line py-[11px] text-[14.5px] last:border-b-0 max-[1000px]:py-[13px]',
+        '<span class="self-start font-mono text-[14px] text-fg-soft tabular-nums max-[1000px]:col-start-1 max-[1000px]:row-start-1">' + esc(m.time) + '</span>' +
+        '<span class="flex min-w-0 flex-col gap-px self-start max-[1000px]:col-start-2 max-[1000px]:row-start-1">' +
           '<span class="flex items-center gap-2 leading-[1.35] text-fg">' + sportIcon(m.sportId, 'size-[17px]') + esc(head.sport) + '</span>' +
           (head.kind ? '<span class="text-[12.5px] leading-[1.4] text-fg-mute">' + esc(head.kind) + '</span>' : '') +
         '</span>' +
-        '<span class="min-w-0 text-[13px] leading-[1.4] break-words text-fg-soft max-[860px]:col-span-2 max-[860px]:col-start-2 max-[860px]:row-start-2">' +
-          (m.teams ? esc(m.teams) : '<span class="text-fg-mute">—</span>') + '</span>' +
-        // สกอร์คือพระเอกของแถว จึงเป็นตัวโตสุดและชิดขวา · ผลกับสถานะซ้อนกันมุมขวาบนจอแคบ
-        '<span class="flex flex-col items-end gap-0.5 justify-self-end text-right max-[860px]:col-start-3 max-[860px]:row-start-1">' +
-          (m.score
-            ? '<span class="font-mono text-[18px] whitespace-nowrap tabular-nums ' + (live ? 'text-live' : 'text-fg') + '">' + esc(m.score) + '</span>'
-            : '<span class="text-fg-mute">—</span>') +
-          (m.unofficial ? '<span class="text-[10.5px] whitespace-nowrap text-fg-mute">ยังไม่เป็นทางการ</span>' : '') +
+        '<span class="flex min-w-0 max-w-[340px] flex-col gap-1.5 max-[1000px]:col-start-2 max-[1000px]:row-start-2 max-[1000px]:mt-2">' +
+          resultLines(m).map(function (line) { return lineHtml(state.data, line, selfCores); }).join('') +
         '</span>' +
-        '<span class="justify-self-end max-[860px]:col-span-2 max-[860px]:col-start-2 max-[860px]:row-start-3 max-[860px]:mt-1 max-[860px]:justify-self-start">' +
-          // ป้าย "ประกาศแล้ว" ขึ้นแทบทุกแถว ถ้าเป็นสีเขียวจะกลายเป็นสีตกแต่งเต็มตาราง
-          // สีในตารางนี้เหลือไว้ให้ "กำลังแข่ง" ที่เป็นสิ่งเดียวที่เกิดขึ้นตอนนี้จริง ๆ
-          statusChip(m.status, m.status === 'done' ? 'bg-surface-soft text-fg-soft' : '') +
+        '<span class="max-[1000px]:col-start-2 max-[1000px]:row-start-3 max-[1000px]:mt-2">' +
+          statusHtml(m) +
         '</span>'));
     });
   }
