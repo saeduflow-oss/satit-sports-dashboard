@@ -219,6 +219,6 @@
 
 ## 10. การเชื่อมต่อข้อมูล
 
-หน้าเว็บดึงข้อมูลจาก `/api/dashboard` (Node.js) → fallback `data/mock.json`
-เมื่อพร้อมใช้ Google Sheets ให้แก้ `loadData()` ใน `server.js` โดยคง schema เดิม
+หน้าเว็บดึง Google Sheets เองในเบราว์เซอร์ (`public/js/sheets.js`) → fallback `data/mock.json`
+เว็บอยู่บน GitHub Pages จึงไม่มีโค้ดฝั่งเซิร์ฟเวอร์ · เปลี่ยนแหล่งข้อมูลได้โดยแก้ไฟล์นั้นให้คืน schema เดิม
 รายละเอียดใน [README.md](README.md)

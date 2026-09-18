@@ -7,6 +7,8 @@
    ไม่งั้นคลาสนั้นจะไม่ถูกสร้างลงไฟล์ CSS — ชุดที่ใช้ซ้ำหลายที่รวบไว้เป็นค่าคงที่ข้างล่างนี้
    ========================================================= */
 
+import { loadFromSheets } from './sheets.js';
+
 /** ป้ายสถานะ (สด / ประกาศแล้ว / รอเริ่ม) — โครงเดียว เปลี่ยนแค่คู่สีตามสถานะ */
 export var CHIP = 'inline-flex items-center gap-1.5 whitespace-nowrap rounded-full px-[11px] py-1 text-[11.5px]';
 /** จุดกะพริบหน้าป้าย "กำลังแข่ง" — ย้อมตามสีข้อความของป้ายที่ครอบอยู่ */
@@ -77,11 +79,23 @@ export function setText(id, text) { var n = document.getElementById(id); if (n) 
 
 export function el(tag, cls, html) { var n = document.createElement(tag); if (cls) n.className = cls; if (html != null) n.innerHTML = html; return n; }
 
-/* ---------- โหลดข้อมูล ---------- */
+/* ---------- โหลดข้อมูล ----------
+   ดึงจาก Google Sheets ตรง ๆ ในเบราว์เซอร์ (sheets.js) — เว็บอยู่บน GitHub Pages ซึ่งเสิร์ฟได้แค่
+   ไฟล์นิ่ง ๆ ไม่มี /api/ ให้เรียกอีกแล้ว
+   ต่อชีตไม่ได้ (ออฟไลน์ / ชีตถูกปิดแชร์ / แท็บถูกลบ):
+     - เคยโหลดสำเร็จมาก่อนในหน้านี้ → ใช้ชุดล่าสุดต่อไป ดีกว่าสลับไปโชว์ข้อมูลตัวอย่างกลางคัน
+       (ข้อมูลตัวอย่างเป็นคนละรายการ คนดูจะเห็นวัน/คู่แข่ง/เหรียญเปลี่ยนเป็นของปลอมทั้งหน้า)
+     - ยังไม่เคยสำเร็จเลย → data/mock.json ให้หน้ายังมีอะไรให้ดู และแจ้งใน console ว่าเป็นของตัวอย่าง */
+var lastGood = null;
 export function loadData() {
-  return fetch('/api/dashboard', { cache: 'no-store' })
-    .then(function (r) { if (!r.ok) throw 0; return r.json(); })
-    .catch(function () { return fetch('data/mock.json', { cache: 'no-store' }).then(function (r) { if (!r.ok) throw 0; return r.json(); }); });
+  return loadFromSheets()
+    .then(function (data) { lastGood = data; return data; })
+    .catch(function (err) {
+      console.error('เชื่อมต่อ Google Sheets ไม่สำเร็จ:', err);
+      if (lastGood) return lastGood;
+      console.warn('กำลังแสดงข้อมูลตัวอย่างจาก data/mock.json ไม่ใช่ผลจริง');
+      return fetch('data/mock.json', { cache: 'no-store' }).then(function (r) { if (!r.ok) throw 0; return r.json(); });
+    });
 }
 
 /** โหลดข้อมูลไม่สำเร็จ: แทนที่เนื้อหาทั้งหน้าด้วยกล่องบอกวิธีแก้ (เหมือนกันทุกหน้า) */
@@ -90,12 +104,15 @@ export function showLoadError(err) {
   document.getElementById('main').innerHTML =
     '<div class="rounded-lg border border-line bg-surface px-6 py-[22px] shadow-panel">' +
       '<p class="mt-0 mb-1.5 text-live">โหลดข้อมูลการแข่งขันไม่สำเร็จ</p>' +
-      '<p class="m-0 text-[13.5px] text-fg-soft">ตรวจสอบว่าเซิร์ฟเวอร์ทำงานอยู่ (npm start) หรือเปิดผ่าน http:// แล้วลองรีเฟรชอีกครั้ง</p>' +
+      '<p class="m-0 text-[13.5px] text-fg-soft">ตรวจสอบการเชื่อมต่ออินเทอร์เน็ต และเปิดหน้าเว็บผ่าน http(s):// ไม่ใช่เปิดไฟล์ตรง ๆ แล้วลองรีเฟรชอีกครั้ง</p>' +
     '</div>';
 }
 
-/* ---------- ดึงข้อมูลใหม่เป็นระยะ เพื่อให้ตัวเลขสดจริงตามชีต ---------- */
-var POLL_MS = 20000;
+/* ---------- ดึงข้อมูลใหม่เป็นระยะ เพื่อให้ตัวเลขสดจริงตามชีต ----------
+   ตอนมีเซิร์ฟเวอร์ ชีตถูกยิงอย่างมากทุก 15 วินาทีไม่ว่าจะมีคนเปิดกี่คน (แคชรวมที่เซิร์ฟเวอร์)
+   ตอนนี้ทุกเบราว์เซอร์ยิงชีตเอง รอบละ 5 คำขอ (4 แท็บ + ภาพ) จึงเว้นห่างขึ้นเป็นครึ่งนาที
+   — ช้ากว่าเดิม 10 วินาทีแต่แลกกับการไม่ให้ Google มองว่าถูกยิงถี่จนตัดการเชื่อมต่อช่วงคนดูเยอะ */
+var POLL_MS = 30000;
 export function schedulePolling(onData) {
   setInterval(function () {
     loadData().then(onData).catch(function (err) { console.warn('ซิงก์ข้อมูลใหม่ไม่สำเร็จ:', err); });

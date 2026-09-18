@@ -7,22 +7,19 @@
 
 ```
 กีฬาสาธิต/
-├── package.json          # dependency (express) และคำสั่งรัน/build
-├── netlify.toml          # ตั้งค่า deploy บน Netlify (publish = public/, API = function)
-├── server.js             # เปลือก HTTP: เสิร์ฟ public/ + เส้นทาง /api/* (ใช้ตอนรันเอง)
-├── lib/
-│   └── dashboard.js      # ตรรกะทั้งหมด: ดึง Google Sheets → JSON + พร็อกซีรูป Drive
-├── netlify/functions/    # API เวอร์ชัน serverless (ห่อ lib/dashboard.js อีกที)
-│   ├── dashboard.js      # → /api/dashboard
-│   ├── photo.js          # → /api/photo/:id
-│   └── health.js         # → /api/health
+├── package.json          # คำสั่ง build (Tailwind) และเซิร์ฟเวอร์สำหรับดูบนเครื่อง
+├── .github/workflows/
+│   └── pages.yml         # push ขึ้น main → build แล้วเผยแพร่ public/ ขึ้น GitHub Pages
+├── server.js             # เสิร์ฟ public/ บนเครื่องตัวเอง (ดูงานก่อน push) ไม่มี API ใด ๆ
 ├── src/input.css         # ต้นทาง Tailwind (คอมไพล์เป็น public/css/app.css)
 ├── fonts/                # ฟอนต์ต้นฉบับ (build ก๊อปเข้า public/fonts/)
 ├── data/
 │   └── mock.json         # ข้อมูลสำรอง ใช้เมื่อต่อ Google Sheets ไม่ได้
-└── public/               # รากของเว็บที่ถูก deploy — ไฟล์ฝั่งหน้าเว็บทั้งหมด
+└── public/               # รากของเว็บที่ถูก deploy — ทั้งเว็บอยู่ในนี้
     ├── index.html        # หน้าหลัก (มี matches / medals / schedule / school / sports)
+    ├── .nojekyll         # บอก GitHub Pages ว่าไม่ต้องเอา Jekyll มาแปลงไฟล์
     ├── css/app.css       # CSS ที่ Tailwind สร้าง (commit ขึ้น repo ด้วย)
+    ├── js/sheets.js      # ดึง Google Sheets แล้วแปลงเป็น JSON — รันในเบราว์เซอร์
     ├── js/               # ตรรกะฝั่งหน้าเว็บ แยกไฟล์ตามหน้า + common.js
     └── assets/           # ไอคอนกีฬา / โลโก้ / ภาพ
 ```
@@ -37,29 +34,36 @@ npm start
 แล้วเปิดเบราว์เซอร์ที่ **http://localhost:3000**
 
 > เปิดผ่าน `http://` เท่านั้น (อย่าดับเบิลคลิกเปิดไฟล์ `index.html` ตรง ๆ
-> เพราะ `fetch` จะถูกบล็อกโดย browser) — ถ้าจำเป็น หน้าเว็บมี fallback
-> อ่าน `data/mock.json` ให้อัตโนมัติ
+> เพราะ `fetch` กับ ES module จะถูกบล็อกโดย browser)
+> `server.js` เป็นแค่ static server — ใช้ `python3 -m http.server -d public 3000` แทนก็ได้
 
-## Deploy ขึ้น Netlify
+ไม่มีโค้ดฝั่งเซิร์ฟเวอร์: หน้าเว็บดึง Google Sheets เองจากในเบราว์เซอร์ (`public/js/sheets.js`)
+เพราะ gviz ของ Google เปิด CORS ให้ทุกโดเมน — บนเครื่องตัวเองจึงได้ข้อมูลจริงเหมือนบนเว็บทุกประการ
+ต่อชีตไม่ได้เมื่อไร หน้าเว็บตกไปใช้ `data/mock.json` เอง (มีแจ้งใน console ว่ากำลังโชว์ข้อมูลตัวอย่าง)
 
-push ขึ้น GitHub แล้ว Netlify จะ build ให้เองตาม `netlify.toml` ไม่ต้องตั้งค่าใน UI
+## Deploy ขึ้น GitHub Pages
 
-สองจุดที่ต้องเข้าใจ ไม่งั้นเว็บจะขึ้น **Page not found**:
+เว็บอยู่ที่ **https://saeduflow-oss.github.io/satit-sports-dashboard/**
 
-1. **รากของเว็บคือ `public/` ไม่ใช่รากของ repo** — ตั้งไว้ที่ `publish = "public"`
-   (ถ้าไม่ตั้ง Netlify จะเผยแพร่รากของ repo ซึ่งไม่มี `index.html` → 404 ทุกหน้า
-   แถมยังเปิดให้คนนอกโหลด `server.js` / `package.json` ได้ด้วย)
-2. **Netlify ไม่รัน Express ให้** — `/api/*` จึงวิ่งเข้า `netlify/functions/` แทน
-   ผ่าน redirect ใน `netlify.toml` โดยใช้ตรรกะเดียวกับตอนรันเองใน `lib/dashboard.js`
+push ขึ้น `main` แล้ว workflow `.github/workflows/pages.yml` จะ build และเผยแพร่ให้เอง
+(ดูความคืบหน้าที่แท็บ **Actions** ของ repo ใช้เวลาราว 1 นาที)
+
+**ตั้งค่าครั้งเดียว** ที่ repo → Settings → Pages → Build and deployment →
+Source เลือก **GitHub Actions** — ถ้าปล่อยเป็น "Deploy from a branch" workflow จะรันจบ
+แต่ Pages ไม่หยิบผลลัพธ์ไปใช้ เว็บจะขึ้น 404
+
+สิ่งที่ต้องรู้เพราะ Pages เสิร์ฟได้แค่ไฟล์นิ่ง ๆ:
+
+1. **ไม่มีเซิร์ฟเวอร์** — การดึง Google Sheets ทั้งหมดทำในเบราว์เซอร์ (`public/js/sheets.js`)
+   และรูปจาก Google Drive ก็โหลดตรงจาก Drive (ผ่าน `drive.google.com/thumbnail?id=…`)
+   ชีตกับไฟล์รูปจึง **ต้องแชร์แบบ "ทุกคนที่มีลิงก์ดูได้"** ไม่งั้นเบราว์เซอร์ของคนดูจะเข้าไม่ได้
+2. **ทุกเบราว์เซอร์ยิงชีตเอง** รอบละ 5 คำขอ ทุก 30 วินาที (ไม่มีแคชรวมเหมือนตอนมีเซิร์ฟเวอร์)
+   ปรับได้ที่ `POLL_MS` ใน `public/js/common.js` ถ้าคนดูพร้อมกันเยอะจนชีตเริ่มตอบช้า
+3. **เว็บอยู่ใต้ path ย่อย** (`/satit-sports-dashboard/`) — ลิงก์และ `fetch` ในโค้ดจึงเป็น
+   path แบบสัมพัทธ์ทั้งหมด (`css/app.css`, `data/mock.json`) ห้ามขึ้นต้นด้วย `/`
 
 คำสั่ง build คือ `npm run build` = คอมไพล์ Tailwind + ก๊อป `fonts/` กับ
 `data/mock.json` เข้า `public/` (ทั้งสองอย่างอยู่นอก `public/` จึงไม่ถูก deploy เอง)
-
-เช็กหลัง deploy: เปิด `/api/health` ต้องได้ `{"ok":true}` — ถ้าไม่ได้แปลว่า
-function ไม่ถูก build ให้ดู log ที่แท็บ Deploys ของ Netlify
-
-> รันบนโฮสต์ที่รัน Node ได้ (Render / Railway / เครื่องตัวเอง) ก็ยังใช้ `npm start`
-> ได้เหมือนเดิม — `server.js` กับ function ใช้ `lib/dashboard.js` ตัวเดียวกัน
 
 ## กีฬาที่รองรับ (14 ชนิด)
 
@@ -67,7 +71,7 @@ function ไม่ถูก build ให้ดู log ที่แท็บ Depl
 แบดมินตัน · เปตอง · ฟุตบอล · ลีลาศ · ว่ายน้ำ · หมากกระดาน · แฮนด์บอล ·
 วอลเลย์บอล
 
-กีฬาที่ไม่ได้ส่งแข่งอยู่ในลิสต์ `SPORTS_NOT_ENTERED` ใน `lib/dashboard.js` (ตอนนี้คือ **อีสปอร์ต**)
+กีฬาที่ไม่ได้ส่งแข่งอยู่ในลิสต์ `SPORTS_NOT_ENTERED` ใน `public/js/sheets.js` (ตอนนี้คือ **อีสปอร์ต**)
 แถวของกีฬาในลิสต์นี้จะถูกตัดออกทั้งหน้าชนิดกีฬาและตารางแข่งขัน แม้ในชีตจะยังมีอยู่
 ถ้าปีไหนกลับมาส่งแข่ง ให้เอาชื่อออกจากลิสต์นั้นและใส่ชื่อกลับเข้า `SPORT_IDS`
 
@@ -80,7 +84,7 @@ function ไม่ถูก build ให้ดู log ที่แท็บ Depl
 - **ตารางแข่งขันรายวัน** — ไทม์ไลน์เรียงตามเวลา พร้อมไอคอนกีฬาและสถานที่
 - **ตารางการแข่งขัน** (`schedule.html`) — ผังกำหนดการทั้งรายการ แยกพาเนลต่อวัน
   ไม่แบ่งหน้าและไม่ตัดข้อมูล ใช้เป็นผังอ้างอิง อ่านจากแท็บ **"ตารางการแข่งขัน"**
-  ในชีต (`GID_SCHEDULE_PLAN` ใน `lib/dashboard.js`) คอลัมน์: วันที่ / กีฬา / ประเภท / เวลา /
+  ในชีต (`GID_SCHEDULE_PLAN` ใน `public/js/sheets.js`) คอลัมน์: วันที่ / กีฬา / ประเภท / เวลา /
   ทีม A / VS / ทีม B — แท็บนี้ไม่มีช่องผลกับสถานะ หน้านี้จึงไม่มีคอลัมน์ผล/สถานะ
   (ผลอยู่ที่หน้า "ตารางแข่งขัน" ซึ่งอ่านจากแท็บ "ผลการแข่งขันประจำวัน")
 - **ตารางเหรียญ** — จัดอันดับอัตโนมัติ ไฮไลต์โรงเรียนเรา และลูกศรบอกทิศทางอันดับ
@@ -107,8 +111,9 @@ function ไม่ถูก build ให้ดู log ที่แท็บ Depl
 | วันที่ | กีฬา | เวลา | คำบรรยาย | สถานที่ | ลิงก์รูป | เครดิต |
 |---|---|---|---|---|---|---|
 
-แล้วใส่ `gid` ของแท็บนั้นที่ค่า `GID_PHOTOS` ใน `lib/dashboard.js` (ค่าว่าง = ยังไม่เปิดใช้)
-ลิงก์แชร์จาก Google Drive ใส่ได้เลย เซิร์ฟเวอร์แปลงเป็นลิงก์รูปตรงให้เอง
+แล้วใส่ชื่อแท็บนั้นที่ค่า `SHEET_PHOTOS` ใน `public/js/sheets.js` (ค่าว่าง = ยังไม่เปิดใช้)
+ลิงก์แชร์จาก Google Drive ใส่ได้เลย หน้าเว็บแปลงเป็นลิงก์รูปตรงให้เอง
+(ไฟล์รูปต้องแชร์แบบ "ทุกคนที่มีลิงก์ดูได้" เพราะเบราว์เซอร์ของคนดูเป็นคนโหลดรูปเอง)
 วันที่ในแท็บนี้ต้องตรงกับวันในตารางแข่งขัน ไม่งั้นภาพนั้นจะถูกข้าม
 ถ้าอ่านแท็บนี้ไม่สำเร็จ ส่วนอื่นของแดชบอร์ดยังทำงานตามปกติ
 
@@ -128,12 +133,15 @@ function ไม่ถูก build ให้ดู log ที่แท็บ Depl
 basketball, basketball3x3, badminton, petanque, football, dancesport,
 swimming, boardgame, handball, volleyball`
 
-## ต่อ Google Sheets จริง
+## การเชื่อมต่อ Google Sheets
 
-แก้เฉพาะฟังก์ชัน `loadData()` ใน `lib/dashboard.js` (มีคอมเมนต์แนะนำ 2 วิธีไว้ในไฟล์):
+ทั้งหมดอยู่ใน `public/js/sheets.js` — อ่านชีตผ่าน Google Visualization API (gviz)
+ซึ่งใช้ได้กับชีตที่แชร์แบบ "ทุกคนที่มีลิงก์ดูได้" โดยไม่ต้องมี API key และเปิด CORS ให้ทุกโดเมน
 
-- **วิธี A — Google Sheets API v4** (`npm i googleapis` + Service Account)
-- **วิธี B — Apps Script Web App** (เผยแพร่ชีตเป็น JSON endpoint แล้ว fetch)
+ค่าที่ต้องรู้เมื่อชีตเปลี่ยน: `SHEET_ID`, ชื่อ/gid ของแต่ละแท็บ (`SHEET_MEDAL_TABLE`,
+`GID_SPORT_MEDALS`, `GID_SCHEDULE`, `GID_SCHEDULE_PLAN`, `SHEET_PHOTOS`) และ `SELF_SCHOOL_NAME`
+(ชื่อโรงเรียนเราสะกดตรงตามชีต ใช้จับแถว "ของเรา")
 
-ขอเพียงคืน object ที่มี schema ตรงกับ `data/mock.json` — หน้าเว็บทำงานต่อได้
-ทันทีโดยไม่ต้องแก้ frontend
+ฟังก์ชัน `loadFromSheets()` คืน object ที่มี schema เดียวกับ `data/mock.json`
+หน้าเว็บทุกหน้ารับ object นี้ผ่าน `loadData()` ใน `common.js` — ถ้าวันหลังเปลี่ยนแหล่งข้อมูล
+(เช่น Apps Script Web App) แก้แค่ไฟล์นี้ให้คืน schema เดิม frontend ไม่ต้องแตะ
