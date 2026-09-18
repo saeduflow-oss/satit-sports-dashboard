@@ -12,9 +12,12 @@
 
   <div class="group grid min-h-screen grid-cols-[252px_1fr] max-[860px]:grid-cols-1" id="app">
     <!-- ===================== SIDEBAR ===================== -->
-    <aside class="sticky top-0 z-40 flex h-screen flex-col border-r border-line bg-surface max-[860px]:fixed max-[860px]:top-0 max-[860px]:left-0 max-[860px]:w-[252px] max-[860px]:-translate-x-full max-[860px]:shadow-card max-[860px]:transition-transform max-[860px]:duration-[220ms] max-[860px]:group-data-[side=open]:translate-x-0 motion-reduce:transition-none" id="sidebar" aria-label="เมนูหลัก">
+    <aside class="sticky top-0 z-40 flex h-screen flex-col border-r border-line bg-rail max-[860px]:fixed max-[860px]:top-0 max-[860px]:left-0 max-[860px]:w-[252px] max-[860px]:-translate-x-full max-[860px]:shadow-card max-[860px]:transition-transform max-[860px]:duration-[220ms] max-[860px]:group-data-[side=open]:translate-x-0 motion-reduce:transition-none" id="sidebar" aria-label="เมนูหลัก">
       <div class="px-[22px] pt-5 pb-4">
-        <img class="block h-auto w-full dark:rounded-md dark:bg-white dark:px-3 dark:py-2.5" src="assets/logo/satitpatumwan.png" alt="โรงเรียนสาธิตมหาวิทยาลัยศรีนครินทรวิโรฒ ปทุมวัน" width="776" height="214" decoding="async" />
+        <img class="block h-auto w-full dark:hidden" src="assets/logo/satitpatumwan.png" alt="โรงเรียนสาธิตมหาวิทยาลัยศรีนครินทรวิโรฒ ปทุมวัน" width="776" height="214" decoding="async" />
+        <!-- โหมดมืดใช้โลโก้ฉบับขาวพื้นโปร่ง ไม่ใช่โลโก้สีวางบนกล่องขาวเหมือนเดิม
+             สองไฟล์สัดส่วนเท่ากัน (3.63) สลับธีมแล้วเลย์เอาต์จึงไม่ขยับ -->
+        <img class="hidden h-auto w-full dark:block" src="assets/logo/satitpatumwan-dark.webp" alt="โรงเรียนสาธิตมหาวิทยาลัยศรีนครินทรวิโรฒ ปทุมวัน" width="537" height="148" decoding="async" />
       </div>
       <nav class="flex flex-1 flex-col gap-[3px] overflow-y-auto px-3.5 py-2.5" aria-label="นำทางแดชบอร์ด">
         <a class="group/nav flex items-center gap-3 rounded-md px-3.5 py-[11px] text-[13.5px] text-fg-soft no-underline transition-[background-color,color] duration-150 hover:bg-surface-soft hover:text-fg focus-visible:outline-2 focus-visible:-outline-offset-2 focus-visible:outline-brand aria-[current=page]:bg-brand aria-[current=page]:text-on-ink aria-[current=page]:shadow-card motion-reduce:transition-none" href="index.html" data-page="home"><i class="icon-mask size-[18px] opacity-80 group-aria-[current=page]/nav:opacity-100" data-ic="dashboard"></i><span>หน้าหลัก</span></a>

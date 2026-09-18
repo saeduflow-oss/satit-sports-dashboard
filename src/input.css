@@ -36,6 +36,9 @@
   --color-surface: oklch(99% 0.002 250);
   --color-surface-soft: oklch(95.5% 0.01 250);
   --color-line: oklch(91% 0.012 250);
+  /* rail = แถบเมนูข้าง แยก token ออกจาก surface เพราะโหมดมืดต้องการให้มันจมเป็นฉากหลัง
+     ไม่ใช่ลอยเด่นกว่าเนื้อหา — โหมดสว่างใช้ค่าเดียวกับ surface หน้าตาจึงไม่เปลี่ยน */
+  --color-rail: oklch(99% 0.002 250);
   --color-line-strong: oklch(83% 0.016 250);
 
   /* fg = ตัวหนังสือ · ink = พื้นเข้มที่มีตัวหนังสือสว่างอยู่บน (on-ink) */
@@ -84,67 +87,77 @@
 
 /* โหมดมืด — สลับเฉพาะค่าของ token ชุดเดิม utility ในหน้าเว็บไม่ต้องรู้เรื่องธีมเลย
    ประกาศนอก @layer จึงชนะค่าตั้งต้นจาก @theme เสมอ
-   สองบล็อกนี้ค่าเหมือนกัน: บล็อกแรกคือธีมของเครื่อง บล็อกที่สองคือปุ่มสลับที่ผู้ใช้กดเอง */
+   สองบล็อกนี้ค่าเหมือนกัน: บล็อกแรกคือธีมของเครื่อง บล็อกที่สองคือปุ่มสลับที่ผู้ใช้กดเอง
+
+   ระวังเรื่องตัวเลข: % ใน oklch() คือความสว่างเชิงการรับรู้ ไม่ใช่ % ของค่า RGB
+   ปลายมืดมันบีบตัวแรงมาก — oklch(17%) ออกมาเป็น rgb(9,15,26) คือเกือบดำสนิท
+   ไม่ใช่เทาเข้มอย่างที่ตัวเลขชวนให้คิด ชุดแรกจึงเขียน paper 17% / surface 22%
+   แล้วได้จอที่ทุกชั้นกลืนกันหมด (พื้นกับแผงต่างกันแค่ 1.11:1 ส่วนแถบเมนูกับการ์ดสีเดียวกันเป๊ะ)
+   ค่าปัจจุบันเว้นช่องระหว่างชั้นให้กว้างพอมองออก: พื้น 22% / การ์ดรอง 27% / แผง 33% = 1.42:1
+   ถ้าจะขยับ paper หรือ surface ต้องขยับพื้นหลังชิป (live-bg / done-bg / upcoming-bg /
+   brand-100) ตามด้วย เพราะมันต้องสว่างกว่าการ์ดที่มันวางอยู่เสมอ */
 @media (prefers-color-scheme: dark) {
   :root:not([data-theme="light"]) {
-    --color-paper: oklch(17% 0.025 260);
-    --color-surface: oklch(22% 0.028 260);
-    --color-surface-soft: oklch(20% 0.026 260);
-    --color-line: oklch(31% 0.03 260);
-    --color-line-strong: oklch(39% 0.03 260);
+    --color-paper: oklch(22% 0.028 260);
+    --color-surface: oklch(33% 0.032 260);
+    --color-surface-soft: oklch(27% 0.03 260);
+    --color-rail: oklch(16% 0.022 260);
+    --color-line: oklch(44% 0.034 260);
+    --color-line-strong: oklch(52% 0.034 260);
     --color-fg: oklch(93% 0.012 260);
-    --color-fg-soft: oklch(75% 0.018 260);
-    --color-fg-mute: oklch(60% 0.016 260);
+    --color-fg-soft: oklch(82% 0.016 260);
+    --color-fg-mute: oklch(71% 0.016 260);
     --color-ink: oklch(93% 0.012 260);
-    --color-on-ink: oklch(17% 0.025 260);
-    --color-on-ink-soft: oklch(17% 0.025 260 / .6);
-    --color-brand: oklch(68% 0.17 260);
+    --color-on-ink: oklch(22% 0.028 260);
+    --color-on-ink-soft: oklch(22% 0.028 260 / .6);
+    --color-brand: oklch(72% 0.17 260);
     --color-brand-strong: oklch(74% 0.16 260);
-    --color-brand-100: oklch(28% 0.05 260);
+    --color-brand-100: oklch(30% 0.05 260);
     --color-gold: oklch(78% 0.13 82);
     --color-silver: oklch(78% 0.008 250);
     --color-bronze: oklch(66% 0.12 45);
     --color-gold-ink: oklch(82% 0.12 84);
     --color-silver-ink: oklch(80% 0.01 250);
     --color-bronze-ink: oklch(72% 0.12 45);
-    --color-live: oklch(72% 0.17 350);
-    --color-live-bg: oklch(28% 0.05 350);
-    --color-done: oklch(68% 0.13 155);
-    --color-done-bg: oklch(25% 0.04 155);
+    --color-live: oklch(75% 0.16 350);
+    --color-live-bg: oklch(29% 0.055 350);
+    --color-done: oklch(72% 0.13 155);
+    --color-done-bg: oklch(27% 0.045 155);
     --color-upcoming: oklch(75% 0.018 260);
-    --color-upcoming-bg: oklch(26% 0.02 260);
+    --color-upcoming-bg: oklch(29% 0.02 260);
     --shadow-panel: 0 1px 2px oklch(0% 0 0 / .3), 0 8px 24px oklch(0% 0 0 / .4);
     --shadow-card: 0 10px 26px oklch(0% 0 0 / .45);
   }
 }
 
 :root[data-theme="dark"] {
-  --color-paper: oklch(17% 0.025 260);
-  --color-surface: oklch(22% 0.028 260);
-  --color-surface-soft: oklch(20% 0.026 260);
-  --color-line: oklch(31% 0.03 260);
-  --color-line-strong: oklch(39% 0.03 260);
+  --color-paper: oklch(22% 0.028 260);
+  --color-surface: oklch(33% 0.032 260);
+  --color-surface-soft: oklch(27% 0.03 260);
+  --color-rail: oklch(16% 0.022 260);
+  --color-line: oklch(44% 0.034 260);
+  --color-line-strong: oklch(52% 0.034 260);
   --color-fg: oklch(93% 0.012 260);
-  --color-fg-soft: oklch(75% 0.018 260);
-  --color-fg-mute: oklch(60% 0.016 260);
+  --color-fg-soft: oklch(82% 0.016 260);
+  --color-fg-mute: oklch(71% 0.016 260);
   --color-ink: oklch(93% 0.012 260);
-  --color-on-ink: oklch(17% 0.025 260);
-  --color-on-ink-soft: oklch(17% 0.025 260 / .6);
-  --color-brand: oklch(68% 0.17 260);
+  --color-on-ink: oklch(22% 0.028 260);
+  --color-on-ink-soft: oklch(22% 0.028 260 / .6);
+  --color-brand: oklch(72% 0.17 260);
   --color-brand-strong: oklch(74% 0.16 260);
-  --color-brand-100: oklch(28% 0.05 260);
+  --color-brand-100: oklch(30% 0.05 260);
   --color-gold: oklch(78% 0.13 82);
   --color-silver: oklch(78% 0.008 250);
   --color-bronze: oklch(66% 0.12 45);
   --color-gold-ink: oklch(82% 0.12 84);
   --color-silver-ink: oklch(80% 0.01 250);
   --color-bronze-ink: oklch(72% 0.12 45);
-  --color-live: oklch(72% 0.17 350);
-  --color-live-bg: oklch(28% 0.05 350);
-  --color-done: oklch(68% 0.13 155);
-  --color-done-bg: oklch(25% 0.04 155);
+  --color-live: oklch(75% 0.16 350);
+  --color-live-bg: oklch(29% 0.055 350);
+  --color-done: oklch(72% 0.13 155);
+  --color-done-bg: oklch(27% 0.045 155);
   --color-upcoming: oklch(75% 0.018 260);
-  --color-upcoming-bg: oklch(26% 0.02 260);
+  --color-upcoming-bg: oklch(29% 0.02 260);
   --shadow-panel: 0 1px 2px oklch(0% 0 0 / .3), 0 8px 24px oklch(0% 0 0 / .4);
   --shadow-card: 0 10px 26px oklch(0% 0 0 / .45);
 }
