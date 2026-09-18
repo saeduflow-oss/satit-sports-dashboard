@@ -8,6 +8,8 @@
 ```
 กีฬาสาธิต/
 ├── package.json          # คำสั่ง build (Tailwind) และเซิร์ฟเวอร์สำหรับดูบนเครื่อง
+├── .github/workflows/
+│   └── pages.yml         # push ขึ้น main → build แล้วเผยแพร่ public/ ขึ้น GitHub Pages
 ├── server.js             # เสิร์ฟ public/ บนเครื่องตัวเอง (ดูงานก่อน push) ไม่มี API ใด ๆ
 ├── src/input.css         # ต้นทาง Tailwind (คอมไพล์เป็น public/css/app.css)
 ├── fonts/                # ฟอนต์ต้นฉบับ (build ก๊อปเข้า public/fonts/)
@@ -15,7 +17,7 @@
 │   └── mock.json         # ข้อมูลสำรอง ใช้เมื่อต่อ Google Sheets ไม่ได้
 └── public/               # รากของเว็บที่ถูก deploy — ทั้งเว็บอยู่ในนี้
     ├── index.html        # หน้าหลัก (มี matches / medals / schedule / school / sports)
-    ├── .nojekyll         # บอก GitHub Pages ว่าไม่ต้องเอา Jekyll มาแปลงไฟล์ (branch gh-pages = เนื้อในโฟลเดอร์นี้)
+    ├── .nojekyll         # บอก GitHub Pages ว่าไม่ต้องเอา Jekyll มาแปลงไฟล์
     ├── css/app.css       # CSS ที่ Tailwind สร้าง (commit ขึ้น repo ด้วย)
     ├── js/sheets.js      # ดึง Google Sheets แล้วแปลงเป็น JSON — รันในเบราว์เซอร์
     ├── js/               # ตรรกะฝั่งหน้าเว็บ แยกไฟล์ตามหน้า + common.js
@@ -43,24 +45,20 @@ npm start
 
 เว็บอยู่ที่ **https://saeduflow-oss.github.io/satit-sports-dashboard/**
 
-Pages เสิร์ฟจาก branch `gh-pages` ซึ่งเก็บ "เฉพาะเนื้อใน `public/`" (ไม่มี server.js / package.json ปน)
-การ deploy คือการเอา `public/` ล่าสุดไปทับ branch นั้น — มีคำสั่งสำเร็จรูปให้แล้ว:
+**push ขึ้น `main` แล้วจบ** — workflow `.github/workflows/pages.yml` จะ build และเผยแพร่ให้เอง
+ใช้เวลาราว 1 นาที ดูความคืบหน้าที่แท็บ **Actions** ของ repo (กด "Run workflow" ตรงนั้นเพื่อ deploy ซ้ำได้)
 
 ```bash
-git add -A && git commit -m "..."   # เก็บงานลง main ก่อน (subtree push ใช้ของที่ commit แล้วเท่านั้น)
+git add -A && git commit -m "..."
 git push origin main
-npm run deploy                       # = npm run build + git subtree push --prefix public origin gh-pages
 ```
 
-เว็บอัปเดตภายในราว 1 นาทีหลัง push (ดูสถานะที่ repo → Settings → Pages)
+ตั้งค่าไว้แล้วที่ repo → Settings → Pages → Source = **GitHub Actions** — ถ้าใครไปเปลี่ยนเป็น
+"Deploy from a branch" workflow จะรันจบแต่ Pages ไม่หยิบผลลัพธ์ไปใช้ เว็บจะค้างเวอร์ชันเก่า
 
-ทำไมไม่ใช้ GitHub Actions ให้ push แล้วขึ้นเอง: โทเคน `gh` ที่ใช้อยู่ไม่มีสิทธิ์ `workflow`
-จึงสร้างไฟล์ใน `.github/workflows/` ไม่ได้ — ถ้าวันหลังรัน `gh auth refresh -h github.com -s workflow`
-สักครั้ง ก็เปลี่ยนมาเป็น Actions ได้ (workflow ราว 40 บรรทัด: checkout → npm ci → npm run build →
-upload `public/` → deploy-pages แล้วตั้ง Source = GitHub Actions)
-
-ถ้า `npm run deploy` ถูกปฏิเสธเพราะ `gh-pages` ถูกแก้ทับจากที่อื่น ให้ทับกลับด้วย
-`git push origin $(git subtree split --prefix public main):gh-pages --force`
+> การ push ไฟล์ใน `.github/workflows/` ต้องใช้โทเคนที่มีสิทธิ์ `workflow`
+> ถ้าเจอ "refusing to allow an OAuth App to create or update workflow" ให้รัน
+> `gh auth refresh -h github.com -s workflow` (ล็อกอินในเบราว์เซอร์ด้วยบัญชีเดียวกับ `gh`)
 
 สิ่งที่ต้องรู้เพราะ Pages เสิร์ฟได้แค่ไฟล์นิ่ง ๆ:
 

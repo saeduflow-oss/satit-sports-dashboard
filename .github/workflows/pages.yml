@@ -1,0 +1,57 @@
+# เผยแพร่เว็บขึ้น GitHub Pages ทุกครั้งที่ push ขึ้น main
+#
+# Pages เสิร์ฟได้แค่ไฟล์นิ่ง ๆ — ทั้งเว็บจึงอยู่ใน public/ และดึง Google Sheets จากในเบราว์เซอร์เอง
+# (public/js/sheets.js) ไม่มีโค้ดฝั่งเซิร์ฟเวอร์ให้ต้องรัน
+#
+# ตั้งค่าใน repo: Settings → Pages → Build and deployment → Source = "GitHub Actions"
+# (ไม่ใช่ "Deploy from a branch" ไม่งั้น workflow นี้จะรันจบแต่ Pages ไม่หยิบผลลัพธ์ไปใช้)
+
+name: Deploy to GitHub Pages
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:   # กดรันเองจากแท็บ Actions ได้ เผื่อต้อง deploy ซ้ำโดยไม่ต้อง push
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+# push ติด ๆ กันหลายครั้ง ให้ยกเลิกรอบเก่าแล้วเอารอบล่าสุดขึ้นแทน ไม่ต้องรอ deploy เรียงคิว
+concurrency:
+  group: pages
+  cancel-in-progress: true
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+
+      - run: npm ci
+
+      # คอมไพล์ Tailwind (src/input.css → public/css/app.css) + ก๊อป fonts/ และ data/mock.json เข้า public/
+      # app.css ถูก commit ไว้ใน repo อยู่แล้ว แต่ build ซ้ำตรงนี้กันกรณีแก้ CSS แล้วลืมคอมไพล์ก่อน push
+      - run: npm run build
+
+      - uses: actions/configure-pages@v5
+
+      - uses: actions/upload-pages-artifact@v3
+        with:
+          path: public
+
+  deploy:
+    needs: build
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - id: deployment
+        uses: actions/deploy-pages@v4

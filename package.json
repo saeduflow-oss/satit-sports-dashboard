@@ -11,8 +11,7 @@
     "dev:css": "tailwindcss -i src/input.css -o public/css/app.css --watch",
     "prestart": "npm run build:css",
     "start": "node server.js",
-    "dev": "node --watch server.js",
-    "deploy": "npm run build && git subtree push --prefix public origin gh-pages"
+    "dev": "node --watch server.js"
   },
   "engines": {
     "node": ">=18"
